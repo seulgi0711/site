@@ -28,7 +28,7 @@ rules:
     - code: 100
   semi:
     - 2
-    - never
+    - always
   class-methods-use-this: 0
   comma-dangle:
     - 2

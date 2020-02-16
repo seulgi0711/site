@@ -1,11 +1,12 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Link } from 'gatsby'
-import Img from 'gatsby-image'
-import Navigation from './navigation'
-import { toKebabCase } from '../helpers'
-
-import style from '../styles/post.module.css'
+import { Link } from 'gatsby';
+import Img from 'gatsby-image';
+import { MDXRenderer } from 'gatsby-plugin-mdx';
+import { MdxProvider } from '@mdx-js/react';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { toKebabCase } from '../helpers';
+import style from '../styles/post.module.css';
+import Navigation from './navigation';
 
 const Post = ({
   title,
@@ -15,15 +16,15 @@ const Post = ({
   author,
   excerpt,
   tags,
-  html,
+  body,
   previousPost,
   nextPost,
 }) => {
-  const previousPath = previousPost && previousPost.frontmatter.path
-  const previousLabel = previousPost && previousPost.frontmatter.title
-  const nextPath = nextPost && nextPost.frontmatter.path
-  const nextLabel = nextPost && nextPost.frontmatter.title
-
+  const previousPath = previousPost && previousPost.frontmatter.path;
+  const previousLabel = previousPost && previousPost.frontmatter.title;
+  const nextPath = nextPost && nextPost.frontmatter.path;
+  const nextLabel = nextPost && nextPost.frontmatter.title;
+  console.log('body', body);
   return (
     <div className={style.post}>
       <div className={style.postContent}>
@@ -59,7 +60,7 @@ const Post = ({
           </>
         ) : (
           <>
-            <div dangerouslySetInnerHTML={{ __html: html }} />
+            <MDXRenderer>{body}</MDXRenderer>
             <Navigation
               previousPath={previousPath}
               previousLabel={previousLabel}
@@ -70,8 +71,8 @@ const Post = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 Post.propTypes = {
   title: PropTypes.string,
@@ -80,10 +81,10 @@ Post.propTypes = {
   coverImage: PropTypes.object,
   author: PropTypes.string,
   excerpt: PropTypes.string,
-  html: PropTypes.string,
+  body: PropTypes.string,
   tags: PropTypes.arrayOf(PropTypes.string),
   previousPost: PropTypes.object,
   nextPost: PropTypes.object,
-}
+};
 
-export default Post
+export default Post;
