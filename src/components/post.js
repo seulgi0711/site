@@ -1,7 +1,6 @@
 import { Link } from 'gatsby';
 import Img from 'gatsby-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
-import { MdxProvider } from '@mdx-js/react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { toKebabCase } from '../helpers';
@@ -24,7 +23,6 @@ const Post = ({
   const previousLabel = previousPost && previousPost.frontmatter.title;
   const nextPath = nextPost && nextPost.frontmatter.path;
   const nextLabel = nextPost && nextPost.frontmatter.title;
-  console.log('body', body);
   return (
     <div className={style.post}>
       <div className={style.postContent}>

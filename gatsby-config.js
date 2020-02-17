@@ -93,6 +93,7 @@ module.exports = {
         icon: `src/images/hello-icon.png`,
       },
     },
+    `gatsby-plugin-theme-ui`,
     `gatsby-theme-waves`,
     {
       resolve: `gatsby-plugin-mdx`,
