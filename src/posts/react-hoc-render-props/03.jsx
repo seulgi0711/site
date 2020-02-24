@@ -8,7 +8,9 @@ export default function memberLoader(WrappedComponent) {
       memberId: PropTypes.string.isRequired,
     };
 
-    getMember = () => membersStore.getById(this.props.memberId);
+    getMember = () => {
+      return membersStore.getById(this.props.memberId);
+    };
 
     render() {
       return <WrappedComponent {...this.props} member={this.getMember()} />;
