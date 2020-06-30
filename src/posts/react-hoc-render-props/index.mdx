@@ -1,12 +1,10 @@
 ---
-image: code-smell.png
-
 title: "React.js HOC와 Render Prop으로 중복 로직 제거하기"
 path: "/react-hoc-render-prop"
 date: "2017-11-11"
-coverImage: "../images/hello.jpg"
+coverImage: "../../images/window.jpg"
 author: "nakta"
-excerpt: '같은 코드가 여러군데에서 나타난다? 이 때부터 코드에서 냄새가 나기 시작한다고 한다.'
+excerpt: '같은 코드가 여러 곳에서 나타난다? 이 때부터 코드에서 냄새가 나기 시작한다고 합니다. 만약 중복 코드가 밟생한 부분의 로직이 수정돼야 한다면 어떻게 해야 할까요? 당연히 해당 로직이 사용된 모든곳을 찾아서 수정해줘야 합니다. 이런 문제를 해결하려면 중복코드를 제거해야되겠죠. React로 개발하면서 중복 코드가 발생했을 때 컴포넌트를 활용해서 중복 로직을 제거하는 방법에 대해서 알아보도록 하겠습니다.'
 tags: ["react", "render prop"]
 ---
 
@@ -823,7 +821,7 @@ HOC는 컴포넌트를 꾸며주는 함수를 이용하는 반면, Render Prop�
 
 <CodeWave>
 
-```jsx 1,13:16,22
+```jsx 1,13:16,23
 export default function withMemberLoader(WrappedCoponent) {
   class MemberLoader extends PureComponent {
     static propTypes = {
@@ -963,6 +961,108 @@ export default MemberName;
 
 render prop의 경우 `MemberLoader`라는 컴포넌트로 실제 렌더링할 JSX를 반환해줄 함수를 넘겨줍니다.
 넘겨준 함수의 파라미터로 데이터를 넘겨줄수도 있습니다.
+
+</CodeWave>
+
+
+## 어떤 방법을 쓰는게 좋을까?
+
+두 가지 모두 중복 코드를 제거할 수 있는 방법입니다.
+그렇기 때문에 개인적인 생각으로는 자신이 더 선호하는 방법을 선택하면 될것 같습니다.
+저 같은 경우 HOC 보다는 Render Prop을 조금 더 선호하는 편입니다.
+
+<CodeWave>
+
+```jsx 13
+class MemberName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
+
+<MemberName memberId={memberId} />
+```
+### HOC
+
+HOC로 컴포넌트를 꾸며서 사용하는 경우 memberId를 컴포넌트에 넘겨줍니다.
+
+
+```jsx 3
+class MemberName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
+```
+
+그런데 넘겨준 prop은 memberId 이지만 memberId는 컴포넌트 내에서는 정작 member를 가져다가 쓰게 됩니다.
+이 member가 어디서 나왔는지 한 눈에 알아보기가 쉽지 않습니다. 한마디로, 직관적이지 않은 코드입니다.
+
+
+```jsx 11
+class MemberName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
+```
+
+그나마 HOC에 대해서 알고 있다면 withMemberLoader로 감싼 부분을 보고 어느정도 예상은 가능하겠지만,
+HOC를 전혀 모르는 사람이 본다면 어떨까요? 코드 읽기가 쉽지 않을거라고 예상합니다.
+
+</CodeWave>
+
+
+<CodeWave>
+
+```jsx 22
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  renderName = (member) => {
+    return <span>{member.name}</span>
+  }
+
+  render() {
+    return (
+      <MemberLoader 
+        memberId={this.props.memberId} 
+        render={renderName}
+      />
+    );
+  }
+}
+
+export default MemberName;
+
+<MemberName memberId={memberId} />
+```
+
+### Render Prop
+
+HOC로 컴포넌트를 꾸며서 사용하는 경우 memberId를 컴포넌트에 넘겨줍니다.
+
+
 
 </CodeWave>
 
