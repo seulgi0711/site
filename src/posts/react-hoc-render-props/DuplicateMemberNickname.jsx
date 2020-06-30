@@ -7,7 +7,9 @@ class MemberNickname extends PureComponent {
     memberId: PropTypes.string.isRequired,
   };
 
-  getMember = () => membersStore.getById(this.props.memberId);
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
 
   render() {
     return <span>{this.getMember().nickname}</span>;

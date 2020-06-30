@@ -1,99 +1,620 @@
 ---
-image: code-smell.png
-
 title: "React.js HOC와 Render Prop으로 중복 로직 제거하기"
 path: "/react-hoc-render-prop"
 date: "2017-11-11"
-coverImage: "../images/hello.jpg"
+coverImage: "../../images/window.jpg"
 author: "nakta"
-excerpt: '같은 코드가 여러군데에서 나타난다? 이 때부터 코드에서 냄새가 나기 시작한다고 한다.'
+excerpt: '같은 코드가 여러 곳에서 나타난다? 이 때부터 코드에서 냄새가 나기 시작한다고 합니다. 만약 중복 코드가 밟생한 부분의 로직이 수정돼야 한다면 어떻게 해야 할까요? 당연히 해당 로직이 사용된 모든곳을 찾아서 수정해줘야 합니다. 이런 문제를 해결하려면 중복코드를 제거해야되겠죠. React로 개발하면서 중복 코드가 발생했을 때 컴포넌트를 활용해서 중복 로직을 제거하는 방법에 대해서 알아보도록 하겠습니다.'
 tags: ["react", "render prop"]
 ---
 
 import { CodeWave } from 'gatsby-theme-waves';
 
-같은 코드가 여러군데에서 나타난다? 이 때부터 코드에서 냄새가 나기 시작한다고 한다.
-냄새가 나기 시작한 코드에서 중복코드가 발생한 부분에 수정이 필요할 경우 당연히 중복 수정을 해야한다.
-이를 해결하기 위해 중복코드를 제거하고 코드를 재사용 하면 된다.
-React로 개발하면서 중복 코드가 발생했을 때 컴포넌트를 활용해서 중복 로직을 제거하는 방법에 대해서 알아보자.
+같은 코드가 여러 곳에서 나타난다? 이 때부터 코드에서 냄새가 나기 시작한다고 합니다.
+만약 중복 코드가 밟생한 부분의 로직이 수정돼야 한다면 어떻게 해야 할까요? 당연히 해당 로직이 사용된 모든곳을 찾아서 수정해줘야 합니다.
+이런 문제를 해결하려면 중복코드를 제거해야되겠죠.
+React로 개발하면서 중복 코드가 발생했을 때 컴포넌트를 활용해서 중복 로직을 제거하는 방법에 대해서 알아보도록 하겠습니다.
+
+## 중복 코드를 가진 컴포넌트
+
+React 컴포넌트를 개발하다보면 특정 아이디를 가지고 데이터를 가져와서 사용해야 하는 경우가 있습니다.
+여기서는 멤버의 아이디를 이용해서 멤버 정보를 가져온 후, 필요한 데이터를 화면에 렌더링 하는 컴포넌트를 만들어보도록 하겠습니다.
+이때 나타날 수 있는 중복코드에 대해서 알아보고 이 중복코드를 제거할 수 있는 방법에 대해서도 살펴보겠습니다.
 
 <CodeWave>
 
-```jsx file=./01.jsx
+```jsx
+import React, { PureComponent } from 'react';
+
+class MemberName extends PureComponent {
+  
+}
+
+export default MemberName;
 ```
 
-아래 코드를 보면 memberId를 prop으로 받아서 멤버의 이름을 보여주는 간단한 컴포넌트다.
+### MemberName 컴포넌트
 
-```jsx file=./02.jsx
+특정 멤버의 이름을 보여주기 위한 컴포넌트를 만들어보겠습니다.
+`memberId`라는 값을 받아서 해당 아이디를 갖는 멤버의 이름을 보여주는 컴포넌트 입니다.
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+  
+}
+
+export default MemberName;
 ```
 
-그리고 다음 코드는 위와 마찬가지로 memberId를 prop으로 받아서 멤버의 닉네임을 보여주는 컴포넌트다.
+`memberId`를 prop으로 받아야 하기 때문에 propTyeps에 memberId 타입을 지정해줍니다.
+여기서는 memberId를 string으로 받습니다. memberId가 꼭 필요하기 때문에 isRequired를 붙였습니다.
 
 
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import membersStore from './membersStore';
 
-위 두 컴포넌트에서 멤버의 이름과 닉네임을 가져오기 위해 membersStore에서 memberId를 이용해 멤버 정보를 가져오는 로직이 중복코드다.
-이 멤버 정보를 가져오는 부분의 중복을 제거하는 작업을 살펴보자.
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
 
-### HOC(Higher Order Component)
-첫 번째로 <a href="https://reactjs.org/docs/higher-order-components.html" rel="noopener" target="_blank">HOC(Higher Order Component)</a>를 이용하는 방법이 있겠다. 
-HOC를 간단하게 설명하면 컴포넌트를 감싸서 뭔가 작업을한 후 props를 통해 작업한 결과를 넘겨주는 컴포넌트라고 생각하면 된다.
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+}
 
-HOC를 이용해서 어떻게 중복을 제거하는지 아래를 살펴보자.
-
-아래를 보면 중복코드를 하나의 HOC 컴포넌트로 뽑아냈다.
-
-
-```jsx file=./03.jsx
+export default MemberName;
 ```
 
-memberLoader HOC가 하는 일은 이전에 MemberName, MemberNickname 컴포넌트가 받았던 memberId를 prop으로 받아서 membersStore에 있는 멤버 정보를 가져다가 member라는 prop을 새로 만들어 전달하는 역할을 한다.
+props으로 받은 memberId를 가지고 멤버정보를 받아와야합니다.
+`membersStore`를 import 해서 `getById` 메소드를 이용해 멤버 정보를 가져오도록 합니다.
 
-아래 memberLoader HOC를 이용한 MemberName과 MemberNickname이 있다.
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import membersStore from './membersStore';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().name}</div>;
+  }
+}
+
+export default MemberName;
+```
+
+이제 `getMember` 메소드로 멤버 정보를 가져와 name을 렌더링 하도록 합니다.
 
 </CodeWave>
 
-```jsx
-import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
-import memberLoader from './memberLoader';
-
-class MemberName extends PureComponent {
-    static propTypes = {
-        member: PropTypes.object.isRequired
-    };
-
-    render() {
-        return <span>{this.props.member.name}</span>;
-    }
-}
-
-export default memberLoader(MemberName);
-```
+<CodeWave>
 
 ```jsx
-import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
-import memberLoader from './memberLoader';
+import React, { PureComponent } from 'react';
 
 class MemberNickname extends PureComponent {
+  
+}
+
+export default MemberNickname;
+```
+
+### MemberNickname 컴포넌트
+
+이번에는 멤버의 별명을 보여주는 `MemberNickname` 컴포넌트를 만들어 보겠습니다.
+`MemberName` 컴포넌트와 마찬가지로 `memberId`라는 값을 받아서 해당 아이디를 갖는 멤버의 별명을 보여주는 컴포넌트 입니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+
+class MemberNickname extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+  
+}
+
+export default MemberNickname;
+```
+
+`MemberName` 컴포넌트와 마찬가지로 `memberId`를 꼭 필요로 하기 때문에 `PropTypes.string.isRequired`로 정의합니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import membersStore from './membersStore';
+
+class MemberNickname extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+}
+
+export default MemberNickname;
+```
+
+그리고 `memberId` 값으로 멤버 정보를 가져옵니다.
+
+
+```jsx file=./DuplicateMemberNickname.jsx
+```
+
+이제 `getMember` 메소드로 멤버 정보를 가져와 nickname을 렌더링 하도록 합니다.
+
+</CodeWave>
+
+<CodeWave>
+
+```jsx
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().name}</div>;
+  }
+}
+
+class MemberNickname extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().nickname}</div>;
+  }
+}
+```
+
+### 냄새나는 중복 코드
+
+방금 살펴본 두 컴포넌트에는 중복 코드가 존재합니다. 어느 부분일까요?
+prop으로 받은 memberId를 가지고 membersStore에서 멤버 정보를 가져오는 부분입니다.
+
+```jsx 6:8,11[18:33]
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().name}</div>;
+  }
+}
+
+class MemberNickname extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().nickname}</div>;
+  }
+}
+```
+
+`MemberName` 컴포넌트의 `getMember` 메소드와 render 메소드에서 사용하는 `getMember()` 부분과 같은 로직이 `MemberNickname` 컴포넌트에도 존재합니다.
+
+```jsx 20:22,25[18:33]
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().name}</div>;
+  }
+}
+
+class MemberNickname extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().nickname}</div>;
+  }
+}
+```
+
+`MemberNickname` 컴포넌트에서도 `MemberName`과 같은 형태로 렌더링 부분만 다를 뿐 로직이 같습니다.
+
+</CodeWave>
+
+## 중복 제거하기
+
+이제 이 냄새나는 중복코드를 제거하는 방법에 대해서 알아보도록 하겠습니다.
+컴포넌트의 로직 중복을 제거할 수 있는 방법은 크게 두 가지가 있습니다. `HOC`와 `render prop`인데요.
+하나씩 살펴보도록 하겠습니다.
+
+
+### HOC(Higher Order Component)
+
+먼저 HOC를 이용해서 중복 로직을 제거하는 방법에 대해서 살펴보도록 하겠습니다.
+<a href="https://reactjs.org/docs/higher-order-components.html" rel="noopener" target="_blank">HOC(Higher Order Component)</a>에 대한 자세한 정보는 리액트 공식 홈페이지를 통해서 확인하시면 될것 같습니다.
+
+간단하게 HOC에 대해서 설명 하자면 컴포넌트를 감싸서 추가적인 작업을 해준 후 props로 작업 결과를 넘겨주는 컴포넌트라고 생각하면 됩니다.
+이제 이 HOC를 이용해서 어떻게 중복 제거를 할 수 있는지 보겠습니다.
+
+
+<CodeWave>
+
+```jsx file=./DuplicateMemberNickname.jsx 6:12,15[18:33]
+```
+
+먼저 `MemberName` 컴포넌트와 `MemberNickname` 컴포넌트의 중복 코드를 뽑아서 HOC로 만들어줘야 합니다.
+
+
+```jsx
+import React, { PureComponent } from 'react';
+
+export default function withMemberLoader(WrappedCoponent) {
+  class MemberLoader extends PureComponent {
+    
+  }
+
+  return MemberLoader;
+}
+```
+
+`withMemberLoader`라는 이름으로 컴포넌트를 파라미터로 받는 함수를 만들어 줍니다.
+이 함수는 새로운 MemberLoader 라는 컴포넌트를 반환하게 되는데요. 이 안에서 멤버의 아이디를 가지고 멤버 정보를 가져오는 로직을 구현하도록 하겠습니다.
+
+
+```jsx
+import React, { PureComponent } from 'react';
+
+export default function withMemberLoader(WrappedCoponent) {
+  class MemberLoader extends PureComponent {
+    render() {
+      return <WrappedComponent {...this.props} />
+    }
+  }
+
+  return MemberLoader;
+}
+```
+
+새로 반환하는 `MemberLoader` 컴포넌트에서 파라미터로 받았던 컴포넌트를 그대로 렌더링하도록 해줍니다.
+그래야 원래 렌더링 하고 싶은 컴포넌트의 내용을 보여줄 수 있게 되겠죠? 그리고 `MemberLoader` 컴포넌트가 대신 받게 된 `props`를 모두 `WrappedComponent`로 그대로 넘겨줍니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import membersStore from './membersStore';
+
+export default function withMemberLoader(WrappedCoponent) {
+  class MemberLoader extends PureComponent {
     static propTypes = {
-        member: PropTypes.object.isRequired
+      memberId: PropTypes.string.isRequired,
+    };
+
+    getMember = () => {
+      return membersStore.getById(this.props.memberId);
     };
 
     render() {
-        return <span>{this.props.member.nickname}</span>;
+      return <WrappedComponent {...this.props} />
     }
-}
+  }
 
-export default memberLoader(MemberNickname);
+  return MemberLoader;
+}
 ```
 
-MemberName, MemberNickname 컴포넌트를 export default 할때 memberLoader로 한 번 감싼 부분을 보자.
-이렇게 사용하면 memberId를 memberLoader에서 처리해서 새로운 member prop을 받게 된다.
+이제 `MemberName`이나 `MemberNickname` 컴포넌트 대신 `MemberLoader`가 받게된 memberId를 가지고 멤버 정보를 가져오도록 메소드를 만들어줍니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import membersStore from './membersStore';
+
+export default function withMemberLoader(WrappedCoponent) {
+  class MemberLoader extends PureComponent {
+    static propTypes = {
+      memberId: PropTypes.string.isRequired,
+    };
+
+    getMember = () => {
+      return membersStore.getById(this.props.memberId);
+    };
+
+    render() {
+      return (
+        <WrappedComponent 
+          {...this.props} 
+          member={this.getMember()} 
+        />
+      );
+    }
+  }
+
+  return MemberLoader;
+}
+```
+
+`getMember` 메소드로 멤버 정보를 가져올 수 있게 됐습니다.
+`getMember` 메소드를 통해서 가져온 멤버 정보를 파라미터로 받은 컴포넌트의 props로 넘겨주면 멤버 정보를 받을 수 있게 됩니다.
+
+</CodeWave>
+
+### withMemberLoader를 이용한 MemberName와 MemberNickname 컴포넌트
+
+자 이제 withMemberLoader HOC가 만들어졌습니다. 이 HOC를 이용해서 중복 로직이 제거된 `MemberName`과 `MemberNickname` 컴포넌트를 만들어보도록 하겠습니다.
+
+<CodeWave>
+
+```jsx
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+import membersStore from './membersStore';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().name}</div>;
+  }
+}
+
+export defualt MemberName;
+```
+
+### MemberName 컴포넌트 
+
+원래 구현한 MemberName 컴포넌트 입니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+import membersStore from './membersStore';
+import withMemberLoader from './withMemberLoader';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
+```
+
+이제 MemberName 컴포넌트를 export 할 때 withMemberLoader로 한 번 감싸서 export 하도록 해주겠습니다.
+이렇게 하면 props에 member라는 값이 추가 되고 여기 멤버의 정보가 같이 담겨서 넘어오게 됩니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+import withMemberLoader from './withMemberLoader';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
+```
+
+멤버 정보를 withMemberLoader를 통해서 받아오기 때문에 더 이상 `getMember` 메소드는 의미가 없게 됩니다.
+`getMember` 메소드를 제거 하고, 렌더링 부분의 `this.getMember()`를 props에 있는 member를 참조하도록 수정해줍니다.
+
+
+```jsx 1:19
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+import membersStore from './membersStore';
+
+class MemberNickName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().nicknkame}</div>;
+  }
+}
+
+export defualt MemberNickName;
+```
+
+### MemberNickname 컴포넌트
+
+`MemberNickname` 컴포넌트도 마찬가지 입니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+import membersStore from './membersStore';
+import withMemberLoader from './withMemberLoader';
+
+class MemberNickName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().nicknkame}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberNickName);
+```
+
+MemberNickname 컴포넌트를 withMemberLoader 로 한번 감싸서 export 해줍니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+import withMemberLoader from './withMemberLoader';
+
+class MemberNickName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.nickname}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberNickName);
+```
+
+그리고 더이상 의미 없는 getMember 메소드와 이를 참조하는 코드를 props의 member를 참조하도록 수정 합니다.
+
+</CodeWave>
+
+자 이렇게 중복되는 로직을 HOC 컴포넌트로 추출해줍니다.
+그리고 추출한 로직에서 필요한 데이터만 원래 컴포넌트의 props로 넘겨주게 되면 각 컴포넌트마다 중복된 로직을 갖지 않고 손 쉽게 원하는 데이터를 사용할 수 있게 됩니다.
 
 ### Render Prop
 
-두 번째로 Render Prop을 이용한 방법을 살펴보자. Render Prop을 간단하게 설명하면 렌더링 할 JSX를 function형태로 prop으로 넘기는 것을 맒한다.
+두 번째로 Render Prop을 이용한 방법을 살펴보겠습니다. 
+Render Prop에 대해서 간단하게 설명하자면 어떤 컴포넌트의 props으로 함수를 넘겨줍니다.
+이때 넘겨준 함수의 반환값은 렌더링 하고 싶은 JSX입니다. 무슨소리인지 코드를 통해서 살펴보겠습니다.
+
+<CodeWave>
+
+```jsx 2:8,11[18:33]
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return <div>{this.getMember().name}</div>;
+  }
+}
+```
+
+## MemberName 컴포넌트
+
+자 다시 한번 중복 로직이 포함된 `MemberName` 컴포넌트 코드입니다.
+여기에서 중복 로직을 `MemberLoader`라는 컴포넌트를 만들어서 뽑아내도록 하겠습니다.
+
+```jsx
+import React, {PureComponent} from 'react';
+
+class MemberLoader extends PureComponent {
+  // 컴포넌트 내용
+}
+
+export default MemberLoader;
+```
+
+`MemberLoader`라는 컴포넌트를 하나 만들어 줍니다. 이 컴포넌트는 `props`의 값으로 두 가지 값을 받아야 합니다.
+
+1. memberId
+2. render
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+
+class MemberLoader extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+    render: PropTypes.func.isRequired
+  };
+
+  // 컴포넌트 내용
+}
+
+export default MemberLoader;
+```
+
+memberId는 우리가 `MemberName`과 `MemberNickname`에서 받았던 값입니다.
+그리고 **render는 멤버 정보 파라미터로 받아서 원하는 정보를 JSX 형태로 반환해주는 함수**입니다.
+
 
 ```jsx
 import PropTypes from 'prop-types';
@@ -101,88 +622,449 @@ import React, {PureComponent} from 'react';
 import membersStore from './membersStore';
 
 class MemberLoader extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+    render: PropTypes.func.isRequired
+  };
+
+  getMember = () => {
+    membersStore.getById(this.props.memberId);
+  };
+  
+  // 컴포넌트 내용
+}
+
+export default MemberLoader;
+```
+자 이제 우리의 중복 코드인 `getMember`를 이 컴포넌트로 뽑아내도록 하겠습니다.
+이렇게 정의해준 `getMember` 메소드와 props의 render 함수를 이용해서 원하는 값을 렌더링 할 수 있도록 해줍니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
+import membersStore from './membersStore';
+
+class MemberLoader extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+    render: PropTypes.func.isRequired
+  };
+
+  getMember = () => {
+    membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return this.props.render(this.getMember());
+  }
+}
+
+export default MemberLoader;
+```
+props의 render 함수에 `this.getMember()`를 이용해서 멤버 정보를 넘겨주도록 합니다.
+그러면 넘겨준 render 함수에 따라 원하는 값을 화면에 보여줄 수 있게 됩니다.
+
+</CodeWave>
+
+
+### RenderProps을 이용한 MemberName과 MemberNickname 컴포넌트
+
+이제 새로 만든 `MemberLoader` 컴포넌트를 사용해서 중복코드가 제거된 `MemberName`과 `MemberNickname`를 다시 만들어보겠습니다.
+
+<CodeWave>
+
+```jsx file=./DuplicateMemberName.jsx
+```
+
+#### MemberName 컴포넌트
+
+중복코드가 존재하는 `MemberName` 컴포넌트 입니다.
+여기서 우리가 만든 MemberLoader 컴포넌트를 이용해서 멤버정보를 가져와야 합니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import membersStore from './membersStore';
+import MemberLoader from './MemberLoader';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  getMember = () => {
+    return membersStore.getById(this.props.memberId);
+  };
+
+  render() {
+    return <MemberLoader />
+  }
+}
+
+export default MemberName;
+
+```
+render 메소드에서 MemberLoader 컴포넌트를 이용합니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import MemberLoader from './MemberLoader';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  render() {
+    return (
+      <MemberLoader 
+        memberId={this.props.memberId} 
+      />
+    );
+  }
+}
+
+export default MemberName;
+
+```
+`MemberLoader` 컴포넌트의 prop으로 memberId를 넘겨줘야 멤버정보를 가져올 수 있기 때문에 memberId를 prop으로 넘겨줍니다.
+그리고 `getMember` 메소드는 더이상 필요하지 않기 때문에 삭제해줍니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import MemberLoader from './MemberLoader';
+
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  renderName = (member) => {
+    return <span>{member.name}</span>
+  }
+
+  render() {
+    return (
+      <MemberLoader 
+        memberId={this.props.memberId} 
+        render={renderName}
+      />
+    );
+  }
+}
+
+export default MemberName;
+```
+이제 마지막으로 render 함수를 넘겨줘야 합니다. 
+MemberLoader 컴포넌트에서는 이 render 함수에 멤버 정보를 파라미터로 넘겨주게 됩니다.
+이 멤버정보를 이용해서 멤버의 이름을 렌더링 하도록 함수를 만들어 넘겨주면 됩니다.
+
+
+```jsx file=./DuplicateMemberNickname.jsx 1:20
+```
+
+#### MemberNickname 컴포넌트
+
+`MemberNickname` 컴포넌트도 크게 다르지 않습니다.
+
+
+```jsx
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import MemberLoader from './MemberLoader';
+
+class MemberNickname extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  renderNickname = (member) => {
+    return <span>{member.nickname}</span>
+  }
+
+  render() {
+    return (
+      <MemberLoader 
+        memberId={this.props.memberId} 
+        render={renderNickname}
+      />
+    );
+  }
+}
+
+export default MemberNickname;
+```
+
+`MemberLoader` 컴포넌트에 memberId와 render 함수를 넘겨줘서 별명을 렌더링해줍니다.
+
+</CodeWave>
+
+이렇게 RenderProp이라는 방법으로 중복코드를 제거하는 방법에 대해서 살펴봤습니다. RenderProp 기법을 사용할때 넘겨준 함수의 prop 이름을 `render`로 정의해서 사용했었는데요.
+사실 다른이름으로 사용해도 전혀 무방합니다. 심지어 children을 함수로 받아서 사용해도 상관 없습니다.
+
+이렇게 HOC와 render prop으로 중복코드를 제거했는데요. 두가지 방법에 어떤 차이점이 있고, 또 둘 중 어떤 방법을 쓰면 좋을지에 대새서 알아 보겠습니다.
+
+
+## HOC와 Render Prop의 차이
+
+두 가지 다 중복 코드를 제거한다는 공통점이 있습니다. 다만 약간의 차이점이 있는데요.
+
+### 함수 vs 컴포넌트
+
+HOC는 컴포넌트를 꾸며주는 함수를 이용하는 반면, Render Prop은 컴포넌트를 이용합니다.
+
+<CodeWave>
+
+```jsx 1,13:16,23
+export default function withMemberLoader(WrappedCoponent) {
+  class MemberLoader extends PureComponent {
     static propTypes = {
-        memberId: PropTypes.string.isRequired,
-        render: PropTypes.func.isRequired
+      memberId: PropTypes.string.isRequired,
     };
-    
+
     getMember = () => {
-        membersStore.getById(this.props.memberId);
+      return membersStore.getById(this.props.memberId);
     };
-    
+
     render() {
-        return this.props.render(this.getMember());
+      return (
+        <WrappedComponent 
+          {...this.props} 
+          member={this.getMember()} 
+        />
+      );
     }
+  }
+
+  return MemberLoader;
+}
+```
+
+#### HOC
+
+HOC는 파라미터로 컴포넌트를 받는 함수입니다. 
+이 함수에 파라미터를 넘겨주면 함수 내부에 새롭게 정의한 컴포넌트의 `render` 메소드에서 넘겨주었던 컴포넌트를 렌더링 해줍니다.
+
+
+```jsx 7:9,13:16
+export default function withMemberLoader(WrappedCoponent) {
+  class MemberLoader extends PureComponent {
+    static propTypes = {
+      memberId: PropTypes.string.isRequired,
+    };
+
+    getMember = () => {
+      return membersStore.getById(this.props.memberId);
+    };
+
+    render() {
+      return (
+        <WrappedComponent 
+          {...this.props} 
+          member={this.getMember()} 
+        />
+      );
+    }
+  }
+
+  return MemberLoader;
+}
+```
+이 때, 넘겨준 파라미터를 렌더링하면서 내부 컴포넌트에서 만들어낸 데이터를 추가적인 prop으로 넘겨줄 수 있게 되는 것이죠.
+즉, 함수에 넘겨준 컴포넌트를 꾸며준다고 생각하면 편할것 같습니다.
+
+
+```jsx
+class MemberLoader extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+    render: PropTypes.func.isRequired
+  };
+
+  getMember = () => {
+    membersStore.getById(this.props.memberId);
+  };
+  
+  render() {
+    return this.props.render(this.getMember());
+  }
 }
 
 export default MemberLoader;
 ```
 
-위 코드는 Render Prop을 이용해서 중복코드를 제거한 컴포넌트이다. 
-HOC와 다른 점이 몇가지 있다.
-1. function을 반환하는 게 아니라 class를 반환.
-2. WrappedComponent를 받는게 아니라 render라는 prop이 필요.(render는 function이다.)
+### Render Prop
 
-prop으로 받은 render 함수에 멤버정보를 파라미터로 넘기며 실행한다.
+render prop은 함수가 아닌 또다른 컴포넌트 입니다. 이 컴포넌트는 렌더링 하는 부분이 정해져 있지 않고 prop으로 주입받게 돼있습니다.
+그렇다 보니 `MemberLoader`의 경우 멤버 정보를 가지고 렌더링 해야하는 경우에는 `render` 함수만 바꿔서 넘겨주면 원하는 데이터를 쉽게 렌더링 할 수 있습니다.
 
-그럼 위 MemberLoader 컴포넌트를 어떻게 활용하는지 살펴보자.
 
-```jsx
-import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
-import MemberLoader from './MemberLoader';
+</CodeWave>
 
+
+### 누가 데이터를 받는가?
+
+HOC는 직접적으로 렌더링할 컴포넌트가 필요한 데이터를 받는 반면, Render Prop은 데이터를 제공해주는 컴포넌트에 렌더링 할 함수를 넘겨줍니다.
+
+
+<CodeWave>
+
+```jsx 1,3,7[29:34],11
 class MemberName extends PureComponent {
-    static propTypes = {
-        memberId: PropTypes.object.isRequired
-    };
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
 
-    render() {
-        return (
-            <MemberLoader 
-                memberId={this.props.memberId}
-                render={(member) => {
-                    return <span>{member.name}</span>
-                }}
-            />
-        );
-    }
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
+```
+
+#### HOC
+
+HOC는 파라미터로 넘겨준 `MemberName` 컴포넌트가 `member`라는 prop을 받게 됩니다.
+
+
+```jsx 6:8,12:15
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  renderName = (member) => {
+    return <span>{member.name}</span>
+  }
+
+  render() {
+    return (
+      <MemberLoader 
+        memberId={this.props.memberId} 
+        render={renderName}
+      />
+    );
+  }
 }
 
 export default MemberName;
 ```
 
-```jsx
-import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
-import MemberLoader from './MemberLoader';
+#### Render Prop
 
-class MemberNickname extends PureComponent {
-    static propTypes = {
-        memberId: PropTypes.object.isRequired
-    };
+render prop의 경우 `MemberLoader`라는 컴포넌트로 실제 렌더링할 JSX를 반환해줄 함수를 넘겨줍니다.
+넘겨준 함수의 파라미터로 데이터를 넘겨줄수도 있습니다.
 
-    render() {
-        return (
-            <MemberLoader 
-                memberId={this.props.memberId}
-                render={(member) => {
-                    return <span>{member.nickname}</span>
-                }}
-            />
-        );
-    }
+</CodeWave>
+
+
+## 어떤 방법을 쓰는게 좋을까?
+
+두 가지 모두 중복 코드를 제거할 수 있는 방법입니다.
+그렇기 때문에 개인적인 생각으로는 자신이 더 선호하는 방법을 선택하면 될것 같습니다.
+저 같은 경우 HOC 보다는 Render Prop을 조금 더 선호하는 편입니다.
+
+<CodeWave>
+
+```jsx 13
+class MemberName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
 }
-export default MemberNickname;
+
+export defualt withMemberLoader(MemberName);
+
+<MemberName memberId={memberId} />
+```
+### HOC
+
+HOC로 컴포넌트를 꾸며서 사용하는 경우 memberId를 컴포넌트에 넘겨줍니다.
+
+
+```jsx 3
+class MemberName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
 ```
 
-MemberName과 MemberNickname에서 MemberLoader 컴포넌트를 사용하게 된다. 
-prop으로 memberId를 넘겨서 MemberLoader 컴포넌트가 멤버 정보를 가져오도록 처리한다.
-prop으로 render에 member를 받아서 각 각 이름과 닉네임을 반환해주는 함수를 넘겨준다. 이 render로 넘겨준 함수를 MemberLoader 컴포넌트가 멤버 정보화 함께 실행해준다.
+그런데 넘겨준 prop은 memberId 이지만 memberId는 컴포넌트 내에서는 정작 member를 가져다가 쓰게 됩니다.
+이 member가 어디서 나왔는지 한 눈에 알아보기가 쉽지 않습니다. 한마디로, 직관적이지 않은 코드입니다.
 
-개이적으로 처음에는 HOC 형태를 많이 썼으나 Render Prop을 알게 된 후로는 중복코드 제거에 Render Prop을 사용하고 있다.
-Render Prop을 더 선호하는 이유에 몇가지가 있다.
-1. HOC를 사용할 때 member prop이 어디서 오는지 알 수가 없다.
+
+```jsx 11
+class MemberName extends PureComponent {
+  static propTypes = {
+    member: PropTypes.object.isRequired,
+  };
+
+  render() {
+    return <div>{this.props.member.name}</div>;
+  }
+}
+
+export defualt withMemberLoader(MemberName);
+```
+
+그나마 HOC에 대해서 알고 있다면 withMemberLoader로 감싼 부분을 보고 어느정도 예상은 가능하겠지만,
+HOC를 전혀 모르는 사람이 본다면 어떨까요? 코드 읽기가 쉽지 않을거라고 예상합니다.
+
+</CodeWave>
+
+
+<CodeWave>
+
+```jsx 22
+class MemberName extends PureComponent {
+  static propTypes = {
+    memberId: PropTypes.string.isRequired,
+  };
+
+  renderName = (member) => {
+    return <span>{member.name}</span>
+  }
+
+  render() {
+    return (
+      <MemberLoader 
+        memberId={this.props.memberId} 
+        render={renderName}
+      />
+    );
+  }
+}
+
+export default MemberName;
+
+<MemberName memberId={memberId} />
+```
+
+### Render Prop
+
+HOC로 컴포넌트를 꾸며서 사용하는 경우 memberId를 컴포넌트에 넘겨줍니다.
+
+
+
+</CodeWave>
 
 **MemberName을 사용할 때**
 ```jsx
@@ -232,7 +1114,7 @@ class MemberName extends PureComponent {
                 render={(member) => {
                     return <span>{member.name}</span>
                 }}
-            />
+            />ㄴ
         );
     }
 }
@@ -349,5 +1231,38 @@ export default MemberNickname;
 ```
 
 위 코드처럼 render prop 대신 MemberLoader의 children에 function을 넣어서 사용해도 결과는 같다.
+
+
+### HOC와 RenderProp의 차이점
+
+HOC와 RenderProp은 중복코드를 제거해 준다는 공통점을 갖고 있습니다.
+하지만 구현하는 방식에는 차이점이 있죠.
+
+첫 째, HOC는 함수인 반면, RenderProp은 Class이다.
+
+<CodeWave>
+
+```jsx
+export default function withMemberLoader(WrappedCoponent) {
+  // ...
+}
+```
+#### HOC
+
+HOC는 컴포넌트를 파라미터로 받는 함수를 export 합니다.
+
+
+```jsx
+export default function withMemberLoader(WrappedCoponent) {
+  class MemberLoader extends PureComponent {
+    // ...
+  }
+
+  return MemberLoader;
+}
+```
+HOC 함수는 컴포넌트를 파라미터로 받아서 새로운 컴포넌트를 반환하게 됩니다.
+
+</CodeWave>
 
 [code-smell]: https://github.com/mojombo/jekyll

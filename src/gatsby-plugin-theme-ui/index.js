@@ -5,8 +5,6 @@ import nightOwl from '@theme-ui/prism/presets/night-owl.json';
 
 const typographyTheme = toTheme(typography);
 
-console.log('typographyTheme', typographyTheme);
-
 const innerMargin = 85;
 const content = 420;
 
@@ -19,6 +17,8 @@ const theme = merge.all([
   {
     fonts: {
       body:
+        'Inter UI,-apple-system,BlinkMacSystemFont,Roboto,Segoe UI,Helvetica,Arial,sans-serif',
+      heading:
         'Inter UI,-apple-system,BlinkMacSystemFont,Roboto,Segoe UI,Helvetica,Arial,sans-serif',
     },
     styles: {
@@ -45,10 +45,11 @@ const theme = merge.all([
       blockquote: {
         color: `inherit`,
         borderLeftColor: `inherit`,
-        opacity: 0.8,
+        opacity: 0.5,
         '&.translation': {
           fontSize: `1em`,
         },
+        paddingLeft: '28px',
       },
       waves: {
         default: {
