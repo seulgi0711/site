@@ -1,0 +1,82 @@
+---
+title: "Recoil 살펴보기"
+path: "/first-impression-of-recoil"
+date: "2020-06-22"
+coverImage: "../../images/recoil.png"
+author: "nakta"
+excerpt: ''
+tags: ["recoil", "react", "state", "state management"]
+---
+
+import { CodeWave } from 'gatsby-theme-waves';
+
+최근 페이스북에서 새로운 스테이트 관리 도구인 [Recoil](https://recoiljs.org/) 릴리즈했습니다. 현재 버전이 `0.0.10`인 것을 봤을 때 아직 많은 기능들이 추가된 상태는 아닌것 같습니다.
+[Recoil](https://recoiljs.org/)은 기존에 있던 스테이트 관리 도구와 달리 React를 위한 스트이트 관리 도구입니다.
+
+> A state management library for React
+
+React 진영에서 널리 사용중인 Redux나 Mobx가 있음에도 굳이 새로운 관리 도구를 내놓은 이유가 있을까요?
+공식 홈페이지를 살펴보면 아래와 같은 문장들이 있습니다.
+
+> Recoil works and thinks like React.
+> We have the possibility of compatibility with Concurrent Mode and other new React features as they become available.
+
+위 두 문장을 살펴 봤을때 개인적인 생각으로는 리액트와 밀접하게 융합된 리액트 전용 관리 도구의 필요성을 느꼈던것 같습니다.
+
+자 그럼 Recoil은 어떻게 생겼는지 하나씩 살펴보도록 하겠습니다.
+
+## 동작 원리
+
+간단하게 정리하면 `atoms`라는 스테이트를 통해서 `selectors`라고 불리는 게산된 값 또는 함수를 만들어 냅니다.
+그리고 리액트의 각 컴포넌트는 `atoms`와 `selectors`에 접근할 수 있습니다.
+
+코드를 보고 같이 살펴보도록 하겠습니다.
+
+### atoms
+
+`atoms`는 컴포넌트에서 접근할 수 있는 스테이트라고 생각하면 쉽습니다. 여러 컴포넌트에서 접근이 가능한 스테이트라고 생각합시다.
+
+<CodeWave>
+
+```jsx
+import { atom } from 'recoil';
+```
+
+recoil의 atom을 이용해서 정의 가능합니다.
+atom의 파라미터로 key와 default라는 값을 가진 객체를 넘겨주면 됩니다.
+
+
+여기서 key는 스테이트의 고유한 키 이고, default는 스테이트의 초기 값입니다.
+
+
+key 값은 recoil 내부적으로 디버깅을 하거나 다른 여러가지 작업을 할 때 참고하는 값이 됩니다.
+
+```jsx
+import { atom } from 'recoil';
+
+export const memberMapState = atom({
+  key: 'memberMapState',
+  default: {},
+});
+```
+
+멤버 정보를 담기 위한 atom을 하나 정의했습니다. 
+
+멤버의 아이디로 정보에 접근하기 위해서 객체로 초기 값을 정의했습니다.
+
+```jsx
+import { atom } from 'recoil';
+
+export const memberMapState = atom({
+  key: 'memberMapState',
+  default: {},
+});
+
+const MemberName = () => {
+  
+}
+```
+
+이제 
+
+</CodeWave>

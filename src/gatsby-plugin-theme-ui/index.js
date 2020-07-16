@@ -45,10 +45,11 @@ const theme = merge.all([
       blockquote: {
         color: `inherit`,
         borderLeftColor: `inherit`,
-        opacity: 0.8,
+        opacity: 0.5,
         '&.translation': {
           fontSize: `1em`,
         },
+        paddingLeft: '28px',
       },
       waves: {
         default: {
