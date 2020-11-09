@@ -6,9 +6,9 @@ const { toKebabCase } = require('./src/helpers');
 const pageTypeRegex = /src\/(.*?)\//;
 const getType = node => node.fileAbsolutePath.match(pageTypeRegex)[1];
 
-const pageTemplate = path.resolve(`./src/templates/page.js`);
-const indexTemplate = path.resolve(`./src/templates/index.js`);
-const tagsTemplate = path.resolve(`./src/templates/tags.js`);
+const pageTemplate = path.resolve(`./src/templates/page.tsx`);
+const indexTemplate = path.resolve(`./src/templates/index.tsx`);
+const tagsTemplate = path.resolve(`./src/templates/tags.tsx`);
 
 exports.createPages = ({ actions, graphql, getNodes }) => {
   const { createPage } = actions;
@@ -51,11 +51,10 @@ exports.createPages = ({ actions, graphql, getNodes }) => {
       return (typeA > typeB) - (typeA < typeB);
     });
 
-    const posts = allNodes.filter(({ internal, fileAbsolutePath }) => {
-      return (
-        internal.type === 'Mdx' && fileAbsolutePath.indexOf('/posts/') !== -1
-      );
-    });
+    const posts = allNodes.filter(
+      ({ internal, fileAbsolutePath }) =>
+        internal.type === 'Mdx' && fileAbsolutePath.indexOf('/posts/') !== -1,
+    );
 
     // Create posts index with pagination
     paginate({

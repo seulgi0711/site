@@ -1,14 +1,13 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
 
-const Footer = ({ copyrights }) => (
+type Props = {
+  copyrights: string,
+};
+
+const Footer = ({ copyrights }: Props) => (
   <footer>
     {copyrights ? (
-      <div
-        dangerouslySetInnerHTML={{
-          __html: copyrights,
-        }}
-      />
+      <div dangerouslySetInnerHTML={{ __html: copyrights }} />
     ) : (
       <>
         <span className="footerCopyrights">
@@ -20,10 +19,6 @@ const Footer = ({ copyrights }) => (
       </>
     )}
   </footer>
-)
+);
 
-Footer.propTypes = {
-  copyrights: PropTypes.string,
-}
-
-export default Footer
+export default Footer;

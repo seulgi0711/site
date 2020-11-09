@@ -1,10 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'gatsby';
-
-import Icon from './icon';
-
-import style from '../styles/menu.module.css';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Icon from '../icon';
+import {
+  DesktopMenuContainer,
+  MenuArrow,
+  MenuList,
+  MenuTrigger,
+  MobileMenu,
+  MobileMenuContainer,
+  MobileMenuOverlay,
+  SubMenuOverlay,
+  SubMenuTrigger,
+} from './elements';
 
 const MainMenu = ({ mainMenu, mainMenuItems, isMobileMenu }) => {
   const menu = mainMenu.slice(0);
@@ -31,12 +39,7 @@ const SubMenu = ({ mainMenu, mainMenuItems, onToggleSubMenu }) => {
     <>
       {items}
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-      <div
-        className={style.subMenuOverlay}
-        role="button"
-        tabIndex={0}
-        onClick={onToggleSubMenu}
-      />
+      <SubMenuOverlay role="button" tabIndex={0} onClick={onToggleSubMenu} />
     </>
   );
 };
@@ -47,7 +50,7 @@ const toggleIcon = `M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z`;
 
 const Menu = ({
-  mainMenu,
+  mainMenu = [],
   mainMenuItems,
   menuMoreText,
   isMobileMenuVisible,
@@ -59,59 +62,51 @@ const Menu = ({
 
   return (
     <>
-      <div className={style.mobileMenuContainer}>
+      <MobileMenuContainer>
         <>
           {isMobileMenuVisible ? (
             <>
-              {/* eslint-enable */}
-              <ul className={style.mobileMenu}>
+              <MobileMenu>
                 <MainMenu mainMenu={mainMenu} isMobileMenu />
-              </ul>
-              {/* eslint-disable */}
-              <div
-                onClick={onToggleMobileMenu}
-                className={style.mobileMenuOverlay}
-              />
+              </MobileMenu>
+              <MobileMenuOverlay onClick={onToggleMobileMenu} />
             </>
           ) : null}
-          <button
-            className={style.menuTrigger}
+          <MenuTrigger
             style={{ color: 'inherit' }}
             onClick={onToggleMobileMenu}
             type="button"
             aria-label="Menu"
           >
             <Icon style={{ cursor: 'pointer' }} size={24} d={menuIcon} />
-          </button>
+          </MenuTrigger>
         </>
-      </div>
-      <div className={style.desktopMenuContainer}>
-        <ul className={style.menu}>
+      </MobileMenuContainer>
+      <DesktopMenuContainer>
+        <MenuList>
           <MainMenu mainMenu={mainMenu} mainMenuItems={mainMenuItems} />
           {isSubMenu ? (
             <>
-              <button
-                className={style.subMenuTrigger}
+              <SubMenuTrigger
                 onClick={onToggleSubMenu}
                 type="button"
                 aria-label="Menu"
               >
-                {menuMoreText || 'Menu'}{' '}
-                <span className={style.menuArrow}>></span>
-              </button>
+                {menuMoreText || 'Menu'} <MenuArrow>&gt;</MenuArrow>
+              </SubMenuTrigger>
               {isSubMenuVisible ? (
-                <ul className={style.subMenu}>
+                <SubMenu>
                   <SubMenu
                     mainMenu={mainMenu}
                     mainMenuItems={mainMenuItems}
                     onToggleSubMenu={onToggleSubMenu}
                   />
-                </ul>
+                </SubMenu>
               ) : null}
             </>
           ) : null}
-        </ul>
-      </div>
+        </MenuList>
+      </DesktopMenuContainer>
     </>
   );
 };

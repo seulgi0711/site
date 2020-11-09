@@ -1,11 +1,19 @@
 import { Link } from 'gatsby';
-import Img from 'gatsby-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { toKebabCase } from '../helpers';
-import style from '../styles/post.module.css';
-import Navigation from './navigation';
+import { toKebabCase } from '../../helpers';
+import Navigation from '../navigation';
+import {
+  CoverImage,
+  Meta,
+  PostContent,
+  PostWrapper,
+  ReadMore,
+  Tag,
+  Tags,
+  Title,
+} from './elements';
 
 const Post = ({
   title,
@@ -24,37 +32,28 @@ const Post = ({
   const nextPath = nextPost && nextPost.frontmatter.path;
   const nextLabel = nextPost && nextPost.frontmatter.title;
   return (
-    <div className={style.post}>
-      <div className={style.postContent}>
-        <h1 className={style.title}>
-          {excerpt ? <Link to={path}>{title}</Link> : title}
-        </h1>
-        <div className={style.meta}>
+    <PostWrapper>
+      <PostContent>
+        <Title>{excerpt ? <Link to={path}>{title}</Link> : title}</Title>
+        <Meta>
           {date} {author && <>— Written by {author}</>}
           {tags ? (
-            <div className={style.tags}>
+            <Tags>
               {tags.map(tag => (
                 <Link to={`/tag/${toKebabCase(tag)}/`} key={toKebabCase(tag)}>
-                  <span className={style.tag}>#{tag}</span>
+                  <Tag>#{tag}</Tag>
                 </Link>
               ))}
-            </div>
+            </Tags>
           ) : null}
-        </div>
+        </Meta>
 
-        {coverImage && (
-          <Img
-            fluid={coverImage.childImageSharp.fluid}
-            className={style.coverImage}
-          />
-        )}
+        {coverImage && <CoverImage fluid={coverImage.childImageSharp.fluid} />}
 
         {excerpt ? (
           <>
             <p>{excerpt}</p>
-            <Link to={path} className={style.readMore}>
-              Read more →
-            </Link>
+            <ReadMore to={path}>Read more →</ReadMore>
           </>
         ) : (
           <>
@@ -67,8 +66,8 @@ const Post = ({
             />
           </>
         )}
-      </div>
-    </div>
+      </PostContent>
+    </PostWrapper>
   );
 };
 
