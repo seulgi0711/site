@@ -1,30 +1,30 @@
-.header {
+import { keyframes } from '@emotion/core';
+import styled from '../styled';
+
+export const HeaderWrapper = styled.header`
   background: #fafafa;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
   padding: 20px;
-
-  :global .dark-theme :local & {
-    background: #252627;
-  }
+  background: #252627;
 
   a {
     text-decoration: none;
   }
-}
+`;
 
-.inner {
+export const HeaderInner = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 0 auto;
   width: 760px;
   max-width: 100%;
-}
+`;
 
-.logo {
+export const Logo = styled.div`
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -33,34 +33,40 @@
   & img {
     height: 44px;
   }
-}
+`;
 
-.mark {
+export const Mark = styled.span`
   margin-right: 5px;
-}
+  font-size: 18px;
+`;
 
-.cursor {
+const cursorAnimationFrame = keyframes`
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+`;
+
+export const Cursor = styled.span`
   display: inline-block;
   width: 10px;
   height: 1rem;
   background: #fe5186;
   margin-left: 5px;
   border-radius: 1px;
-  animation: cursor 1s infinite;
-}
+  animation: ${cursorAnimationFrame} 1s infinite;
+`;
 
-.text,
-.mark {
+export const LogoText = styled.span`
   font-size: 18px;
-}
+`;
 
-.right {
+export const RightMenu = styled.span`
   display: flex;
   position: relative;
-}
-
-@keyframes cursor {
-  0% { opacity: 0; }
-  50% { opacity: 1; }
-  100% { opacity: 0; }
-}
+`;

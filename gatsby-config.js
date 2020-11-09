@@ -4,7 +4,7 @@ const postCSSUrl = require('postcss-url');
 const postCSSImports = require('postcss-import');
 const cssnano = require('cssnano');
 const postCSSMixins = require('postcss-mixins');
-const rehypePrism = require('@mapbox/rehype-prism');
+require('@mapbox/rehype-prism');
 
 module.exports = {
   siteMetadata: {
@@ -60,6 +60,7 @@ module.exports = {
         path: `${__dirname}/src/pages`,
       },
     },
+    `gatsby-plugin-emotion`,
     {
       resolve: `gatsby-plugin-postcss`,
       options: {
@@ -68,11 +69,6 @@ module.exports = {
           postCSSImports(),
           postCSSMixins(),
           postCSSNested(),
-          postCssPresetEnv({
-            importFrom: 'src/styles/variables.css',
-            stage: 1,
-            preserve: false,
-          }),
           cssnano({
             preset: 'default',
           }),
@@ -90,7 +86,7 @@ module.exports = {
         background_color: `#292a2d`,
         theme_color: `#292a2d`,
         display: `minimal-ui`,
-        icon: `src/images/hello-icon.png`,
+        icon: `src/favicon/favicon-96x96.png`,
       },
     },
     `gatsby-plugin-theme-ui`,

@@ -1,28 +1,27 @@
-.navigation {
+import styled from '../styled';
+
+export const NavigationWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 1024px;
   max-width: 100%;
   margin: 80px 0 40px;
-}
+`;
 
-.button {
+export const Button = styled.span`
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--light-background-secondary);
+  background: ${({ theme }) => theme.lightBackgroundSecondary};
   font-size: 1rem;
   font-weight: bold;
   border-radius: 8px;
   max-width: 40%;
   cursor: pointer;
   appearance: none;
-
-  :global .dark-theme :local & {
-    background: var(--dark-background-secondary);
-  }
+  background: ${({ theme }) => theme.darkBackgroundSecondary};
 
   + .button {
     margin-left: 10px;
@@ -42,12 +41,14 @@
     white-space: nowrap;
     overflow: hidden;
   }
-}
+`;
 
-.iconNext {
-  margin-left: 8px;
-}
-
-.iconPrev {
+export const PrevIcon = styled.span`
   margin-right: 8px;
-}
+`;
+
+export const TextButton = styled.span``;
+
+export const NextIcon = styled.span`
+  margin-left: 8px;
+`;

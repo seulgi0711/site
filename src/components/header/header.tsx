@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'gatsby';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-
-import Menu from './menu';
-
-import style from '../styles/header.module.css';
+import Menu from '../menu';
+import {
+  Cursor,
+  HeaderInner,
+  HeaderWrapper,
+  Logo,
+  LogoText,
+  Mark,
+  RightMenu,
+} from './elements';
 
 const Header = props => {
   const {
@@ -28,24 +34,24 @@ const Header = props => {
   return (
     <>
       <Helmet>
-        <body className="dark-theme" />
+        <body />
       </Helmet>
-      <header className={style.header}>
-        <div className={style.inner}>
+      <HeaderWrapper>
+        <HeaderInner>
           <Link to="/">
-            <div className={style.logo}>
+            <Logo>
               {siteLogo.src ? (
                 <img src={siteLogo.src} alt={siteLogo.alt} />
               ) : (
                 <>
-                  <span className={style.mark}>></span>
-                  <span className={style.text}>{logoText}</span>
-                  <span className={style.cursor} />
+                  <Mark>&gt;</Mark>
+                  <LogoText>{logoText}</LogoText>
+                  <Cursor />
                 </>
               )}
-            </div>
+            </Logo>
           </Link>
-          <span className={style.right}>
+          <RightMenu>
             <Menu
               mainMenu={mainMenu}
               mainMenuItems={mainMenuItems}
@@ -55,9 +61,9 @@ const Header = props => {
               onToggleMobileMenu={onToggleMobileMenu}
               onToggleSubMenu={onToggleSubMenu}
             />
-          </span>
-        </div>
-      </header>
+          </RightMenu>
+        </HeaderInner>
+      </HeaderWrapper>
     </>
   );
 };
