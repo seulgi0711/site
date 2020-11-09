@@ -1,10 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import { ThemeProvider } from 'emotion-theming';
 import { graphql } from 'gatsby';
-
-import SEO from '../components/seo';
+import PropTypes from 'prop-types';
+import React from 'react';
+import GlobalStyles from '../components/GlobalStyles';
 import Layout from '../components/layout';
 import Post from '../components/post';
+import SEO from '../components/seo';
+import { theme } from '../components/styled';
 
 const BlogPostTemplate = ({ data, pageContext }) => {
   const {
@@ -16,21 +18,26 @@ const BlogPostTemplate = ({ data, pageContext }) => {
   const { next, previous } = pageContext;
 
   return (
-    <Layout>
-      <SEO title={title} description={excerpt || autoExcerpt} />
-      <Post
-        key={id}
-        title={title}
-        date={date}
-        path={path}
-        author={author}
-        coverImage={coverImage}
-        body={body}
-        tags={tags}
-        previousPost={previous}
-        nextPost={next}
-      />
-    </Layout>
+    <>
+      <GlobalStyles />
+      <ThemeProvider theme={theme}>
+        <Layout>
+          <SEO title={title} description={excerpt || autoExcerpt} />
+          <Post
+            key={id}
+            title={title}
+            date={date}
+            path={path}
+            author={author}
+            coverImage={coverImage}
+            body={body}
+            tags={tags}
+            previousPost={previous}
+            nextPost={next}
+          />
+        </Layout>
+      </ThemeProvider>
+    </>
   );
 };
 

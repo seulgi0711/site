@@ -1,8 +1,8 @@
 ---
-title: "Showcase"
-date: "2018-07-17"
-author: "Hello Robot"
-path: "/showcase"
+title: 'Showcase'
+date: '2018-07-17'
+author: 'Hello Robot'
+path: '/showcase'
 ---
 
 ## Header 2
@@ -25,7 +25,7 @@ pre {
   font-size: 1rem;
   overflow: auto;
 
-  @media (--phone) {
+  @media (max-width: 684px) {
     white-space: pre-wrap;
     word-wrap: break-word;
   }
@@ -35,10 +35,7 @@ pre {
     color: #ccc;
     padding: 0;
     font-size: inherit;
-
-    .dark-theme & {
-      color: inherit;
-    }
+    color: inherit;
   }
 }
 ```
@@ -46,29 +43,27 @@ pre {
 ```js
 // JS code by PrismJS
 
-const menuTrigger = document.querySelector('.menu-trigger')
-const menu = document.querySelector('.menu')
-const mobileQuery = getComputedStyle(document.body).getPropertyValue('--phoneWidth')
-const isMobile = () => window.matchMedia(mobileQuery).matches
+const menuTrigger = document.querySelector('.menu-trigger');
+const menu = document.querySelector('.menu');
+const mobileQuery = '(max-width: 684px)';
+const isMobile = () => window.matchMedia(mobileQuery).matches;
 const isMobileMenu = () => {
-  menuTrigger.classList.toggle('hidden', !isMobile())
-  menu.classList.toggle('hidden', isMobile())
-}
+  menuTrigger.classList.toggle('hidden', !isMobile());
+  menu.classList.toggle('hidden', isMobile());
+};
 
-isMobileMenu()
+isMobileMenu();
 
-menuTrigger.addEventListener('click', () => menu.classList.toggle('hidden'))
+menuTrigger.addEventListener('click', () => menu.classList.toggle('hidden'));
 
-window.addEventListener('resize', isMobileMenu)
+window.addEventListener('resize', isMobileMenu);
 ```
 
 ```html
 <section id="main">
   <div>
-   <h1 id="title">{{ .Title }}</h1>
-    {{ range .Pages }}
-        {{ .Render "summary"}}
-    {{ end }}
+    <h1 id="title">{{ .Title }}</h1>
+    {{ range .Pages }} {{ .Render "summary"}} {{ end }}
   </div>
 </section>
 ```
