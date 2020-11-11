@@ -6,7 +6,7 @@ const { toKebabCase } = require('./src/helpers');
 const pageTypeRegex = /src\/(.*?)\//;
 const getType = node => node.fileAbsolutePath.match(pageTypeRegex)[1];
 
-const pageTemplate = path.resolve(`./src/templates/page.tsx`);
+const pageTemplate = path.resolve(`./src/templates/Page/Page2.tsx`);
 const indexTemplate = path.resolve(`./src/templates/index.tsx`);
 const tagsTemplate = path.resolve(`./src/templates/tags.tsx`);
 

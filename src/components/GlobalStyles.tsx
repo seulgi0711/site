@@ -43,8 +43,8 @@ export default function GlobalStyles() {
               font-size: 1rem;
             }
 
-            background-color: ${theme.darkBackground} !important;
-            color: ${theme.darkColor} !important;
+            background-color: ${theme.lightBackground} !important;
+            color: ${theme.lightColor} !important;
           }
 
           h1,

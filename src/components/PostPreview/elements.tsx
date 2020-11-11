@@ -3,16 +3,17 @@ import Img from 'gatsby-image';
 import styled from '../styled';
 
 export const PostWrapper = styled.div`
-  width: 100%;
+  width: 400px;
   max-width: 800px;
   text-align: left;
   padding: 20px;
-  margin: 0 auto 20px;
+  position: relative;
+  /* margin: 0 auto 20px; */
 
-  &:not(:last-of-type) {
+  /* &:not(:last-of-type) {
     border-bottom: 1px solid ${({ theme }) => theme.lightBorderColor};
     border-color: ${({ theme }) => theme.darkBorderColor};
-  }
+  } */
 
   @media (max-width: 900px) {
     max-width: 660px;
@@ -31,7 +32,7 @@ export const PostContent = styled.div`
   position: relative;
 `;
 
-export const Title = styled.h1`
+export const Title = styled.h2`
   a {
     text-decoration: none;
   }
@@ -39,7 +40,7 @@ export const Title = styled.h1`
 
 export const Meta = styled.div`
   font-size: 1rem;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
 `;
 
 export const Tags = styled.div`
