@@ -1,5 +1,4 @@
 import { Link } from 'gatsby';
-import Img from 'gatsby-image';
 import styled from '../styled';
 
 export const PostWrapper = styled.div`
@@ -43,20 +42,13 @@ export const Meta = styled.div`
   /* margin-bottom: 30px; */
 `;
 
-export const Tags = styled.div`
+export const TagListWrapper = styled.div`
   margin-top: 10px;
-  opacity: 0.5;
 `;
 
 export const Tag = styled.div`
   display: inline-block;
   margin-right: 10px;
-`;
-
-export const CoverImage = styled(Img)`
-  border-radius: 8px;
-  margin-bottom: 40px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 `;
 
 export const ReadMore = styled(Link)`

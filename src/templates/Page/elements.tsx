@@ -10,4 +10,6 @@ export const Wrapper = styled.div`
   padding-top: 50%;
 `;
 
-export const Title = styled.h1``;
+export const Title = styled.h1`
+  color: ${({ theme }) => theme.darkColor};
+`;

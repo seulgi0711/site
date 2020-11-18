@@ -2,9 +2,15 @@ import { Link } from 'gatsby';
 import { FixedObject } from 'gatsby-image';
 import { take } from 'rambdax';
 import React from 'react';
-import { startCase, toKebabCase } from '../../helpers';
 import styled from '../styled';
-import { Meta, PostContent, PostWrapper, Tag, Tags, Title } from './elements';
+import TagList from '../TagList/TagList';
+import {
+  Meta,
+  PostContent,
+  PostWrapper,
+  TagListWrapper,
+  Title,
+} from './elements';
 
 type Props = {
   title: string,
@@ -31,15 +37,11 @@ const Post = ({ title, date, path, coverImage, excerpt, tags }: Props) => {
         <UpperSide>
           <Date>{date}</Date>
           <Meta>
-            {tags ? (
-              <Tags>
-                {take(2, tags).map(tag => (
-                  <Link to={`/tag/${toKebabCase(tag)}/`} key={toKebabCase(tag)}>
-                    <Tag>#{startCase(tag)}</Tag>
-                  </Link>
-                ))}
-              </Tags>
-            ) : null}
+            {tags && (
+              <TagListWrapper>
+                <TagList tags={take(2, tags)} />
+              </TagListWrapper>
+            )}
           </Meta>
 
           {/* {coverImage && (
