@@ -39,6 +39,61 @@ module.exports = {
   plugins: [
     `babel-preset-gatsby`,
     `gatsby-plugin-react-helmet`,
+    `gatsby-plugin-emotion`,
+    {
+      resolve: `gatsby-plugin-postcss`,
+      options: {
+        postCssPlugins: [
+          postCSSUrl(),
+          postCSSImports(),
+          postCSSMixins(),
+          postCSSNested(),
+          cssnano({
+            preset: 'default',
+          }),
+        ],
+      },
+    },
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `gatsby-starter-hello-friend`,
+        short_name: `hello-friend`,
+        start_url: `/`,
+        background_color: `#292a2d`,
+        theme_color: `#292a2d`,
+        display: `minimal-ui`,
+        icon: `src/favicon/favicon-96x96.png`,
+      },
+    },
+    `gatsby-plugin-theme-ui`,
+    `gatsby-theme-waves`,
+    `gatsby-transformer-sharp`,
+    `gatsby-plugin-sharp`,
+    `gatsby-remark-images`,
+    {
+      resolve: `gatsby-plugin-mdx`,
+      options: {
+        gatsbyRemarkPlugins: [
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 1200,
+            },
+          },
+          {
+            resolve: 'gatsby-remark-embed-video',
+            options: {
+              related: false,
+              noIframeBorder: true,
+            },
+          },
+          `gatsby-remark-smartypants`,
+          'gatsby-remark-import-code',
+        ],
+        // rehypePlugins: [rehypePrism],
+      },
+    },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -58,61 +113,6 @@ module.exports = {
       options: {
         name: `pages`,
         path: `${__dirname}/src/pages`,
-      },
-    },
-    `gatsby-plugin-emotion`,
-    {
-      resolve: `gatsby-plugin-postcss`,
-      options: {
-        postCssPlugins: [
-          postCSSUrl(),
-          postCSSImports(),
-          postCSSMixins(),
-          postCSSNested(),
-          cssnano({
-            preset: 'default',
-          }),
-        ],
-      },
-    },
-    `gatsby-transformer-sharp`,
-    `gatsby-plugin-sharp`,
-    {
-      resolve: `gatsby-plugin-manifest`,
-      options: {
-        name: `gatsby-starter-hello-friend`,
-        short_name: `hello-friend`,
-        start_url: `/`,
-        background_color: `#292a2d`,
-        theme_color: `#292a2d`,
-        display: `minimal-ui`,
-        icon: `src/favicon/favicon-96x96.png`,
-      },
-    },
-    `gatsby-plugin-theme-ui`,
-    `gatsby-theme-waves`,
-    {
-      resolve: `gatsby-plugin-mdx`,
-      options: {
-        gatsbyRemarkPlugins: [
-          {
-            resolve: 'gatsby-remark-embed-video',
-            options: {
-              related: false,
-              noIframeBorder: true,
-            },
-          },
-          {
-            resolve: `gatsby-remark-images`,
-            options: {
-              maxWidth: 800,
-              quality: 100,
-            },
-          },
-          `gatsby-remark-smartypants`,
-          'gatsby-remark-import-code',
-        ],
-        // rehypePlugins: [rehypePrism],
       },
     },
   ],
