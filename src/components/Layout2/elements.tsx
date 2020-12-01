@@ -5,6 +5,8 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  background: ${({ theme }) => theme.lightBackground};
+  color: ${({ theme }) => theme.lightColor};
 `;
 
 export const Content = styled.div`

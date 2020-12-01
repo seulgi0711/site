@@ -14,6 +14,26 @@ export default merge.all([
     colors: {
       primary: '#a9a9b3',
     },
+    fonts: {
+      body:
+        '-apple-system, BlinkMacSystemFont, "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", 나눔고딕, "Nanum Gothic", "Noto Sans KR", "Noto Sans CJK KR", arial, 돋움, Dotum, Tahoma, Geneva, sans-serif',
+      heading:
+        '-apple-system, BlinkMacSystemFont, "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", 나눔고딕, "Nanum Gothic", "Noto Sans KR", "Noto Sans CJK KR", arial, 돋움, Dotum, Tahoma, Geneva, sans-serif',
+    },
+    styles: {
+      blockquote: {
+        opacity: 0.5,
+        paddingLeft: '28px',
+        marginLeft: 0,
+      },
+      waves: {
+        default: {
+          Sticker: {
+            border: 'none',
+          },
+        },
+      },
+    },
   },
   // {
   //   styles: {
@@ -106,13 +126,13 @@ export default merge.all([
 //         ...nightOwl,
 //       },
 //       blockquote: {
-//         color: `inherit`,
-//         borderLeftColor: `inherit`,
-//         opacity: 0.5,
-//         '&.translation': {
-//           fontSize: `1em`,
-//         },
-//         paddingLeft: '28px',
+// color: `inherit`,
+// borderLeftColor: `inherit`,
+// opacity: 0.5,
+// '&.translation': {
+//   fontSize: `1em`,
+// },
+// paddingLeft: '28px',
 //       },
 //       a: {
 //         color: `text`,

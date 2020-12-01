@@ -1,9 +1,3 @@
-const postCssPresetEnv = require(`postcss-preset-env`);
-const postCSSNested = require('postcss-nested');
-const postCSSUrl = require('postcss-url');
-const postCSSImports = require('postcss-import');
-const cssnano = require('cssnano');
-const postCSSMixins = require('postcss-mixins');
 require('@mapbox/rehype-prism');
 
 module.exports = {
@@ -14,27 +8,11 @@ module.exports = {
     author: `nakta`,
     logo: {
       src: '',
-      alt: '',
+      alt: '낙타의 블로그',
     },
     logoText: '낙타의 블로그',
     defaultTheme: 'dark',
-    postsPerPage: 5,
-    showMenuItems: 2,
-    menuMoreText: 'Show more',
-    mainMenu: [
-      {
-        title: 'About',
-        path: '/about',
-      },
-      {
-        title: 'Showcase',
-        path: '/showcase',
-      },
-      {
-        title: 'Example',
-        path: '/example',
-      },
-    ],
+    postsPerPage: 10000,
   },
   plugins: [
     `babel-preset-gatsby`,
@@ -61,22 +39,8 @@ module.exports = {
       },
     },
     `gatsby-plugin-emotion`,
-    {
-      resolve: `gatsby-plugin-postcss`,
-      options: {
-        postCssPlugins: [
-          postCSSUrl(),
-          postCSSImports(),
-          postCSSMixins(),
-          postCSSNested(),
-          cssnano({
-            preset: 'default',
-          }),
-        ],
-      },
-    },
-    `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
+    `gatsby-transformer-sharp`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
