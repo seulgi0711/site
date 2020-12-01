@@ -3,10 +3,10 @@ import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import React from 'react';
 import GlobalStyles from '../components/GlobalStyles';
-import Layout from '../components/layout';
-import { InfoBanner } from '../components/layout/elements';
-import Navigation from '../components/navigation';
-import Post from '../components/post';
+import Layout from '../components/Layout2';
+import { InfoBanner } from '../components/Layout2/elements';
+import Navigation from '../components/Navigation2';
+import PostPreview from '../components/PostPreview';
 import SEO from '../components/seo';
 import { theme } from '../components/styled';
 
@@ -44,7 +44,7 @@ const Tags = ({
             } = node;
 
             return (
-              <Post
+              <PostPreview
                 key={id}
                 title={title}
                 date={date}

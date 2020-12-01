@@ -6,7 +6,7 @@ export const NavigationWrapper = styled.div`
   justify-content: center;
   width: 1024px;
   max-width: 100%;
-  margin: 80px 0 40px;
+  margin: 400px 0 40px;
 `;
 
 export const Button = styled.span`
@@ -21,7 +21,6 @@ export const Button = styled.span`
   max-width: 40%;
   cursor: pointer;
   appearance: none;
-  background: ${({ theme }) => theme.darkBackgroundSecondary};
 
   + .button {
     margin-left: 10px;
