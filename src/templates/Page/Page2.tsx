@@ -30,9 +30,6 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
   } = data.mdx;
   const { next, previous } = pageContext;
 
-  console.log('next', next);
-  console.log('previous', previous);
-
   return (
     <>
       <GlobalStyles />
@@ -91,6 +88,8 @@ const CoverImage = styled(Img)`
   border-radius: 8px;
   margin: 40px 0;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  max-height: 344px;
+  max-width: 760px;
 `;
 
 const TopContent = styled(Content)`
@@ -111,7 +110,7 @@ export const pageQuery = graphql`
         tags
         coverImage {
           childImageSharp {
-            fluid(maxWidth: 800) {
+            fluid(maxWidth: 760) {
               ...GatsbyImageSharpFluid
             }
           }
