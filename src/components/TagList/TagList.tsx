@@ -1,6 +1,6 @@
-import { Link } from 'gatsby';
+// import { Link } from 'gatsby';
 import React from 'react';
-import { startCase, toKebabCase } from '../../helpers';
+import { startCase /* , toKebabCase */ } from '../../helpers';
 import styled from '../styled';
 
 type Props = {
@@ -11,9 +11,9 @@ function TagList({ tags = [] }: Props) {
   return tags.length === 0 ? null : (
     <TagListWrapper>
       {tags.map(tag => (
-        <Link to={`/tag/${toKebabCase(tag)}/`} key={toKebabCase(tag)}>
-          <Tag>#{startCase(tag)}</Tag>
-        </Link>
+        // <Link to={`/tag/${toKebabCase(tag)}/`} key={toKebabCase(tag)}>
+        <Tag>#{startCase(tag)}</Tag>
+        // </Link>
       ))}
     </TagListWrapper>
   );

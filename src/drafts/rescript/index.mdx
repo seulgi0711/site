@@ -1,0 +1,206 @@
+---
+title: "ReScript"
+path: "/rescript"
+date: "2020-12-01"
+coverImage: "../../images/ReScript.jpg"
+author: "nakta"
+excerpt: 'ReScript 맛보기'
+tags: ["ReScript"]
+---
+
+import { CodeWave } from 'gatsby-theme-waves';
+
+
+이번 글에서는 Javascript를 대체할 수 있는 프론트 언어인 ReScript에 대해서 알아보도록 하겠습니다.
+
+## ReScript란?
+
+공식 홈페이지에는 아래 글을 시작으로 ReScript를 소개합니다.
+
+> ReScript는 Javascript를 반드시 사랑하지는 않지만, Javascript의 중요성을 인정하는 사람들을 위한 언어다.
+
+아무래도 Javscript의 중요성에 대해서는 인식을 갖고 있는 상태인지라 ReScript 코드를 **Javascript로 컴파일** 할 수 있습니다.
+그 말인 즉슨, 브라우저, Node.js에서 실행 가능하다는 말이 될것 같습니다.
+
+게다가 대략적으로 살펴보니 타입 지원이 되는듯 합니다. 그래서인지 Typescript와 ReScript는 무엇이 다른가에 대한 설명도 같이 소개하고 있습니다.
+
+### Typescript와 다른점?
+
+1. Typescript는 Javascript의 모든 기능을 지원한다면, ReScript는 Javascript의 일부 기능을 큐레이션해서 지원합니다.
+2. 1번의 이유로 Typescript의 타입 시스템은 어쩔수 없이 점점 복잡해질 수 밖에 없습니다. 반면에 ReScript는 큐레이션해서 지원할 기능을 신중하게 결정하기 때문에 거의 변화하지 않습니다.
+3. Typescript의 타입은 실제 Javascript의 값과 다를 수 있지만, ReScript에서 nullable로 타입을 명시하지 않는이상 null/undefined 값이 사용되지 않기 때문에 null/undefined 에러는 발생하지 않습니다.
+4. ReScript는 타입 어노테이션을 사용하지 않아도 됩니다. 타입 어노테이션을 얼마든지 써도 되지만 쓰지 않는 경우 언어차원에서 추론해줍니다.
+
+<CodeWave>
+
+```typescript
+
+['Typescript', 'ReScript'].map(x => x + 'Test');
+
+````
+
+#### Typescript
+
+Typescript 버전을 먼저 살펴보겠습니다.
+String 리스트를 가지고 뒤에 Test라는 글자를 붙여주는 로직입니다.
+
+
+
+
+```typescript 2,3[32:46]
+
+// (parameter) x: string
+['Typescript', 'ReScript'].map(x => x + 'Test');
+
+````
+
+map메소드에 바로 화살표 함수를 사용했기 때문에 Typescript는 아주 잘 돌아갑니다. x의 타입은 string 타입이라고 잘 추론해줍니다.
+
+
+
+
+```ts 2,4[32:41]
+
+const appendTest = x => x + 'Test';
+
+['Typescript', 'ReScript'].map(appendTest);
+
+```
+
+이번엔 map 메소드에 바로 사용한 화살표 함수를 뽑아서 변수에 할당해서 사용하도록 하겠습니다.
+
+
+
+
+```ts
+
+// Parameter 'x' implicitly has an 'any' type.ts(7006)
+const appendTest = x => x + 'Test';
+
+['Typescript', 'ReScript'].map(appendTest);
+
+```
+
+새로운 함수로 할당하면 파라미터 x가 자동으로 any 타입으로 정의된다고 컴파일 에러를 냅니다.
+
+
+
+```ts
+
+// Parameter 'x' implicitly has an 'any' type.ts(7006)
+const addTwo = x => x + 2;
+
+// Parameter 'x' implicitly has an 'any' type.ts(7006)
+const appendTest = x => x + 'Test';
+
+['Typescript', 'ReScript'].map(addTwo);
+
+```
+
+자동으로 any 타입으로 정의되는 문제가 인해서 숫자 연산을 하는 함수를 map 메소드에 넘겨줘도 map 메소드 자체는 에러가 발생하지 않습니다.
+x가 any로 정의되기 때문에 타입 체크시에는 전혀 문제가 안되기 때문이죠.
+
+
+
+```ts 2[17:25],7
+
+const addTwo = (x: number) => x + 2;
+
+// Parameter 'x' implicitly has an 'any' type.ts(7006)
+const appendTest = x => x + 'Test';
+
+// Type 'string' is not assignable to type 'number'.ts(2345)
+['Typescript', 'ReScript'].map(addTwo);
+
+```
+
+결국 정확한 타입 체킹을 위해서는 `addTwo` 함수의 파라미터에 타입 어노테이션을 붙여줘야 합니다.
+이제서야 map 메소드에 넘겨준 addTwo가 타입이 맞지 않다고 정확한 에러를 냅니다.
+
+
+```ts
+
+let appendTest = x => x ++ "Test"
+
+Belt.Array.map(
+  ["Javascript", "Typescript", "ReScript"], 
+  appendTest
+)
+
+```
+
+#### ReScript
+
+이번엔 ReScript 버전입니다.
+Typescript 버전일때 컴파일 에러가 나던 코드와 같은 구현을 해도 전혀 문제가 되지 않습니다.
+
+
+
+```ts 2,3[18]
+
+// string
+let appendTest = x => x ++ "Test"
+
+Belt.Array.map(
+  ["Javascript", "Typescript", "ReScript"], 
+  appendTest
+)
+
+```
+
+ReScript는 파라미터 x의 타입을 명시하지 않아도 string 타입으로 추론해주기 때문입니다.
+
+
+
+```ts
+
+let addTwo = x => x + 2
+
+Belt.Array.map(
+  ["Javascript", "Typescript", "ReScript"], 
+  addTwo
+)
+
+```
+
+이번에는 숫자 연산을 하는 함수를 사용해보겠습니다.
+
+
+
+```ts
+
+let addTwo = x => x + 2
+
+Belt.Array.map(
+  ["Javascript", "Typescript", "ReScript"], 
+  addTwo // The incompatible parts: int vs string
+)
+
+```
+
+여기서도 파라미터 x의 타입을 int로 추론하기 때문에 컴파일 에러가 발생합니다.
+
+</CodeWave>
+
+
+## 문법
+
+### 변수
+
+#### 선언
+
+변수는 선언은 `let` 키워드를 사용합니다.
+
+```js
+let message = "Hello World"
+```
+
+#### immutable
+
+변수는 기본적으로 immutable입니다. 변수 값을 변경하려고 하면 컴파일 에러가 발생합니다.
+immutable을 당연하게 생각하는지 에러 내용에 immutalbe 관련되 내용이 없습니다.
+
+```js
+let message = "Hello"
+message = "World" // Did you mean `==` here?
+````

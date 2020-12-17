@@ -4,6 +4,7 @@ import Img from 'gatsby-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 // import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
+import Socials from '../../components/About/Socials';
 // import { DarkSpace } from '../../components/elements';
 import GlobalStyles from '../../components/GlobalStyles';
 // import Layout2 from '../../components/Layout2';
@@ -38,13 +39,19 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
         <div>
           <DarkSpace>
             <TopContent>
+              <BlogTitle>
+                <BlogLink href="/">
+                  <h1>Nakta's Dev Story</h1>
+                </BlogLink>
+                <div>Front-End Developer</div>
+              </BlogTitle>
               <Title>{title}</Title>
               <div>{date}</div>
               <TagList tags={tags} />
-              <CoverImage fluid={coverImage.childImageSharp.fluid} />
             </TopContent>
           </DarkSpace>
           <Content>
+            <CoverImage fluid={coverImage.childImageSharp.fluid} />
             <MDXRenderer>{body}</MDXRenderer>
             <Navigation2
               previousPath={previous?.frontmatter?.path}
@@ -52,12 +59,29 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
               nextPath={next?.frontmatter?.path}
               nextLabel={next?.frontmatter?.title}
             />
+            <ExploreMore>
+              <div>
+                다른 글 읽기 <a href="/">https://nakta.dev</a>
+              </div>
+              <SocialWrapper>
+                <Socials />
+              </SocialWrapper>
+            </ExploreMore>
           </Content>
         </div>
       </ThemeProvider>
     </>
   );
 };
+
+const BlogTitle = styled.div`
+  margin-bottom: 120px;
+`;
+
+const BlogLink = styled.a`
+  text-decoration: none;
+  border-bottom: 1px solid;
+`;
 
 const DarkSpace = styled.div`
   background: ${({ theme }) => theme.darkBackground};
@@ -66,6 +90,7 @@ const DarkSpace = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  min-height: 350px;
 `;
 
 const Content = styled.div`
@@ -88,11 +113,21 @@ const CoverImage = styled(Img)`
   border-radius: 8px;
   margin: 40px 0;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  max-height: 344px;
-  max-width: 760px;
 `;
 
 const TopContent = styled(Content)`
+  color: ${({ theme }) => theme.darkColor};
+`;
+
+const ExploreMore = styled.div`
+  margin: 150px 0 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const SocialWrapper = styled.div`
+  margin-top: 20px;
   color: ${({ theme }) => theme.darkColor};
 `;
 

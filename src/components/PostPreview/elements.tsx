@@ -7,6 +7,8 @@ export const PostWrapper = styled.div`
   text-align: left;
   padding: 20px;
   position: relative;
+  flex: none;
+  
   /* margin: 0 auto 20px; */
 
   /* &:not(:last-of-type) {

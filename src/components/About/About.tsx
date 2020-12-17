@@ -1,8 +1,8 @@
 import { graphql, useStaticQuery } from 'gatsby';
 import Img from 'gatsby-image';
 import React from 'react';
-import { GitHub, Velog } from '../SocialIcons';
 import styled from '../styled';
+import Socials from './Socials';
 
 function About() {
   const data = useStaticQuery(graphql`
@@ -27,16 +27,10 @@ function About() {
     <AboutWrapper>
       <Title>Nakta's Dev Story</Title>
       <div>Functional Programming</div>
-      <div>Front-End Dev</div>
+      <div>Front-End Developer</div>
       <UpperSide>
         <ProfileImage fixed={fixed} />
-        <Socials>
-          {/* <Twitter /> */}
-          <GitHub />
-          <Velog />
-          {/* <Medium /> */}
-          {/* <Patreon /> */}
-        </Socials>
+        <Socials />
       </UpperSide>
     </AboutWrapper>
   );
@@ -64,14 +58,6 @@ const UpperSide = styled.div`
   display: flex;
   left: 60px;
   align-items: flex-end;
-`;
-
-const Socials = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-left: 10px;
-  width: 90px;
 `;
 
 export default About;
