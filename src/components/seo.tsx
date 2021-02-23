@@ -63,6 +63,10 @@ const SEO = ({ description, lang, meta, keywords, title }) => {
           name: `twitter:creator`,
           content: author,
         },
+        {
+          name: 'google-site-verification',
+          content: 'K_BYOYvY2tzuhMUM6cayEXMu5HC2uIAquLnbZW2bfdM',
+        },
       ]
         .concat(
           keywords.length > 0
