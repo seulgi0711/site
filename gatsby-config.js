@@ -13,6 +13,7 @@ module.exports = {
     logoText: '낙타의 블로그',
     defaultTheme: 'dark',
     postsPerPage: 10000,
+    siteUrl: 'https://nakta.dev/',
   },
   plugins: [
     `babel-preset-gatsby`,
@@ -77,6 +78,12 @@ module.exports = {
           'gatsby-remark-import-code',
         ],
         // rehypePlugins: [rehypePrism],
+      },
+    },
+    {
+      resolve: 'gatsby-plugin-sitemap',
+      options: {
+        exclude: ['/tag/*'],
       },
     },
   ],

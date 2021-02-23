@@ -3,7 +3,6 @@ import { toTheme } from '@theme-ui/typography';
 import merge from 'deepmerge';
 import wavesTheme from 'gatsby-theme-waves/src/gatsby-plugin-theme-ui/index';
 import typography from 'typography-theme-wordpress-2016';
-console.log('🚀 ~ file: index.js ~ line 5 ~ wavesTheme', wavesTheme);
 
 const typographyTheme = toTheme(typography);
 
