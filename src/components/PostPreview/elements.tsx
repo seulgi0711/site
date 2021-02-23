@@ -2,11 +2,12 @@ import { Link } from 'gatsby';
 import styled from '../styled';
 
 export const PostWrapper = styled.div`
-  width: 400px;
+  width: 320px;
   max-width: 800px;
   text-align: left;
   padding: 20px;
   position: relative;
+  flex: none;
   /* margin: 0 auto 20px; */
 
   /* &:not(:last-of-type) {
