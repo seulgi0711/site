@@ -1,10 +1,14 @@
-import { graphql, useStaticQuery } from 'gatsby';
+import { graphql, Link, useStaticQuery } from 'gatsby';
 import Img from 'gatsby-image';
 import React from 'react';
-import { GitHub, Velog } from '../SocialIcons';
 import styled from '../styled';
+import Socials from './Socials';
 
-function About() {
+type Props = {
+  appendDescription?: React.ReactNode,
+};
+
+function About({ appendDescription }: Props) {
   const data = useStaticQuery(graphql`
     query AboutQuery {
       file(relativePath: { eq: "profile.png" }) {
@@ -25,18 +29,17 @@ function About() {
 
   return (
     <AboutWrapper>
-      <Title>Nakta's Dev Story</Title>
+      <Title>
+        <Link to="/">Nakta's Dev Story</Link>
+      </Title>
       <div>Functional Programming</div>
-      <div>Front-End Dev</div>
+      <div>Front-End Developer</div>
+      {appendDescription && <div>{appendDescription}</div>}
       <UpperSide>
-        <ProfileImage fixed={fixed} />
-        <Socials>
-          {/* <Twitter /> */}
-          <GitHub />
-          <Velog />
-          {/* <Medium /> */}
-          {/* <Patreon /> */}
-        </Socials>
+        <Link to="/">
+          <ProfileImage fixed={fixed} />
+        </Link>
+        <Socials />
       </UpperSide>
     </AboutWrapper>
   );
@@ -49,7 +52,11 @@ const AboutWrapper = styled.div`
   position: relative;
 `;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+  a {
+    text-decoration: none;
+  }
+`;
 
 const ProfileImage = styled(Img)`
   border-radius: 100%;
@@ -64,14 +71,6 @@ const UpperSide = styled.div`
   display: flex;
   left: 60px;
   align-items: flex-end;
-`;
-
-const Socials = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-left: 10px;
-  width: 90px;
 `;
 
 export default About;

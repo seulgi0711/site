@@ -34,7 +34,8 @@ export const InfoBanner = styled.div`
   padding: 10px 20px;
   border-radius: 10px;
   width: calc(100% - 40px);
-  background: ${props => props.theme.darkBackgroundSecondary};
+  background: ${({ theme }) => theme.darkBackgroundSecondary};
+  color: ${({ theme }) => theme.darkColor};
 
   span {
     font-weight: bold;

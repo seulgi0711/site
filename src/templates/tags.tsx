@@ -2,13 +2,33 @@ import { ThemeProvider } from 'emotion-theming';
 import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import React from 'react';
+import About from '../components/About';
 import GlobalStyles from '../components/GlobalStyles';
-import Layout from '../components/Layout2';
 import { InfoBanner } from '../components/Layout2/elements';
-import Navigation from '../components/Navigation2';
 import PostPreview from '../components/PostPreview';
 import SEO from '../components/seo';
-import { theme } from '../components/styled';
+import styled, { theme } from '../components/styled';
+
+const renderPost = ({ node }) => {
+  const {
+    id,
+    excerpt: autoExcerpt,
+    frontmatter: { title, date, path, author, coverImage, excerpt, tags },
+  } = node;
+
+  return (
+    <PostPreview
+      key={id}
+      title={title}
+      date={date}
+      path={path}
+      author={author}
+      coverImage={coverImage}
+      tags={tags}
+      excerpt={excerpt || autoExcerpt}
+    />
+  );
+};
 
 const Tags = ({
   data,
@@ -18,12 +38,25 @@ const Tags = ({
     allMdx: { edges: posts },
   } = data;
 
+  const tagInfo = (
+    <TagInfoWrapper>
+      <InfoBanner>Posts with tag: #{tag}</InfoBanner>
+    </TagInfoWrapper>
+  );
+
   return (
     <>
       <SEO />
       <GlobalStyles />
       <ThemeProvider theme={theme}>
-        <Layout>
+        <Wrapper>
+          <DarkSpace />
+          <PostsWrapper>
+            <About appendDescription={tagInfo} />
+            {posts.map(renderPost)}
+          </PostsWrapper>
+        </Wrapper>
+        {/* <Layout>
           <InfoBanner>
             Posts with tag: <span>#{tag}</span>
           </InfoBanner>
@@ -63,7 +96,7 @@ const Tags = ({
             nextPath={nextPagePath}
             nextLabel="Older posts"
           />
-        </Layout>
+        </Layout> */}
       </ThemeProvider>
     </>
   );
@@ -108,6 +141,41 @@ export const postsQuery = graphql`
       }
     }
   }
+`;
+
+const Wrapper = styled.div`
+  height: 100vh;
+  width: 100vw;
+`;
+
+const DarkSpace = styled.div`
+  background: ${({ theme }) => theme.darkBackground};
+  height: 50%;
+  flex: none;
+  position: fixed;
+  height: 50vh;
+  left: 0;
+  right: 0;
+  z-index: 1;
+`;
+
+const PostsWrapper = styled.div`
+  padding-top: 50vh;
+  height: 100%;
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  background: ${({ theme }) => theme.lightBackground};
+  color: ${({ theme }) => theme.lightColor};
+
+  /* & > *&:not(:first-of-type) {
+    margin-left: 40px;
+  } */
+`;
+
+const TagInfoWrapper = styled.div`
+  margin-top: 40px;
+  font-size: 18px;
 `;
 
 export default Tags;
