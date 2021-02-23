@@ -1,0 +1,83 @@
+---
+title: "Git Repository 이동"
+path: "/move-git-repository"
+date: "2019-11-13"
+# coverImage: "../../images/git.png"
+author: "nakta"
+excerpt: 'Repository 이사가기'
+tags: ["git", "repository", "move"]
+---
+
+
+기존에 작업하던 레파지토리에서 완전히 새로운 레파지토리로 옮기고 싶은 경우가 있다. 
+간단하게는 기존 코드를 새 레파지토리에 복사해서 푸쉬하면 끝이다. 
+하지만, 그동안의 커밋 로그까지 모두 옮기고 싶을 경우에는 git clone --mirror 을 이용해야 한다. 
+모든 작업 내역을 새로운 레파지토리로 복사하는 방법을 알아보자.
+
+## 레파지토리 이사 준비
+
+git clone 명령어와 함께 --mirror 옵션을 이용한다.
+옵션뒤에 레파지토리 주소를 넣어서 레파지토리를 영혼까지 복사할 수 있도록 길을 뚫어준다.
+
+```sh
+git clone --mirror {git Repository 주소}
+```
+
+명령어를 실행하고 나면 복사려는 레파지토리의 이름으로 .git 디렉토리가 생겨있다.
+
+예를들어, 아래와 같은 명령어를 실행했다고 가정해보자 .
+
+```sh
+git clone --mirror https://github.com/홍길동/repositoryToCopy.git
+```
+
+명령어 실행 후 repositoryToCopy.git 라는 디렉토리가 생겨있다.
+
+이 디렉토리 명을 .git 으로 바꿔주자.
+
+
+```sh
+mv repositoryToCopy.git .git
+```
+
+<br/>
+<br/>
+<br/>
+
+## 새 레파지토리로 연결
+
+1번으로 이사 준비를 마쳤으면 이사갈 주소를 알려줘야 이사갈 수가 있다.
+새로 이사 갈 레파지토리 주소를 지정해주자.
+
+```sh
+git remote set-url origin {새로 이사갈 레파지토리 주소}
+```
+
+
+이사 갈 주소를 알려줬으니 짐싸들고 이동하면 된다.
+
+<br/>
+<br/>
+<br/>
+
+## 새 레파지토리로 이동
+
+git push 명령어를 이용한다. 옵션으로 --mirror를 써주면 된다.
+
+```sh
+git push --mirror
+```
+
+<br/>
+<br/>
+<br/>
+
+### Tip. 레파지토리 권한이 없어진 경우
+
+예전엔 권한이 있었지만 지금은 권한이 없어 로컬에만 존재하는 레파지토리가 있을 수 있다. 이 때는 레파지토리 주소를 사용할 수가 없다.
+
+이 상황을 해결하기 위해 레파지토리 루트 디렉토리에 존재하는 .git 디렉토리를 지정해주면 된다.
+
+```sh
+git clone --mirror ./.git
+```

@@ -35,10 +35,14 @@ function Posts({ posts }: Props) {
     const node = ref.current;
 
     const handleWheel = event => {
-      // event.preventDefault();
-      // requestAnimationFrame(() => {
-      //   node.scrollLeft += event.deltaY;
-      // });
+      if (event.deltaY !== 0) {
+        event.preventDefault();
+      }
+
+      requestAnimationFrame(() => {
+        node.scrollLeft += event.deltaY;
+        node.scrollTop = 0;
+      });
     };
 
     node.addEventListener('wheel', handleWheel);
@@ -66,25 +70,13 @@ const PostsWrapper = styled.div`
   position: relative;
   display: flex;
   overflow-x: auto;
+  overflow-y: hidden;
   background: ${({ theme }) => theme.lightBackground};
   color: ${({ theme }) => theme.lightColor};
 
   /* & > *&:not(:first-of-type) {
     margin-left: 40px;
   } */
-`;
-
-const DarkSpace = styled.div`
-  background: ${({ theme }) => theme.darkBackground};
-`;
-
-const Bottom = styled.div`
-  flex-wrap: nowrap;
-  display: flex;
-`;
-
-const ScrollWrapper = styled.div`
-  overflow-x: auto;
 `;
 
 export default Posts;

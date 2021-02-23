@@ -30,9 +30,6 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
   } = data.mdx;
   const { next, previous } = pageContext;
 
-  console.log('next', next);
-  console.log('previous', previous);
-
   return (
     <>
       <GlobalStyles />
@@ -44,7 +41,9 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
               <Title>{title}</Title>
               <div>{date}</div>
               <TagList tags={tags} />
-              <CoverImage fluid={coverImage.childImageSharp.fluid} />
+              {coverImage && (
+                <CoverImage fluid={coverImage.childImageSharp.fluid} />
+              )}
             </TopContent>
           </DarkSpace>
           <Content>
@@ -65,7 +64,7 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
 const DarkSpace = styled.div`
   background: ${({ theme }) => theme.darkBackground};
   color: ${({ theme }) => theme.darkColor};
-  height: 50vh;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
