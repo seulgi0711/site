@@ -1,15 +1,21 @@
 import { ThemeProvider } from 'emotion-theming';
 import { graphql } from 'gatsby';
-import PropTypes from 'prop-types';
 import React from 'react';
 import GlobalStyles from '../components/GlobalStyles';
-import Layout from '../components/layout';
-import Navigation from '../components/navigation';
-import Post from '../components/post';
+import Posts from '../components/Posts';
 import SEO from '../components/seo';
-import { theme } from '../components/styled';
+import styled, { theme } from '../components/styled';
 
-const Index = ({ data, pageContext: { nextPagePath, previousPagePath } }) => {
+type Props = {
+  data: any,
+  pageContext: {
+    nextPagePath: string,
+    previousPagePath: string,
+  },
+};
+
+const Index = ({ data, pageContext }: Props) => {
+  const { nextPagePath, previousPagePath } = pageContext;
   const {
     allMdx: { edges: posts },
   } = data;
@@ -19,55 +25,15 @@ const Index = ({ data, pageContext: { nextPagePath, previousPagePath } }) => {
       <SEO />
       <GlobalStyles />
       <ThemeProvider theme={theme}>
-        <Layout>
-          {posts.map(({ node }) => {
-            const {
-              id,
-              excerpt: autoExcerpt,
-              frontmatter: {
-                title,
-                date,
-                path,
-                author,
-                coverImage,
-                excerpt,
-                tags,
-              },
-            } = node;
-
-            return (
-              <Post
-                key={id}
-                title={title}
-                date={date}
-                path={path}
-                author={author}
-                coverImage={coverImage}
-                tags={tags}
-                excerpt={excerpt || autoExcerpt}
-              />
-            );
-          })}
-
-          <Navigation
-            previousPath={previousPagePath}
-            previousLabel="Newer posts"
-            nextPath={nextPagePath}
-            nextLabel="Older posts"
-          />
-        </Layout>
+        <Wrapper>
+          <DarkSpace />
+          <Posts posts={posts} />
+        </Wrapper>
       </ThemeProvider>
     </>
   );
 };
 
-Index.propTypes = {
-  data: PropTypes.object.isRequired,
-  pageContext: PropTypes.shape({
-    nextPagePath: PropTypes.string,
-    previousPagePath: PropTypes.string,
-  }),
-};
 export const postsQuery = graphql`
   query($limit: Int!, $skip: Int!) {
     allMdx(
@@ -89,9 +55,12 @@ export const postsQuery = graphql`
             tags
             coverImage {
               childImageSharp {
-                fluid(maxWidth: 800) {
-                  ...GatsbyImageSharpFluid
+                fixed(width: 320, height: 214) {
+                  ...GatsbyImageSharpFixed
                 }
+                # fluid(maxWidth: 800) {
+                #   ...GatsbyImageSharpFluid
+                # }
               }
             }
           }
@@ -99,6 +68,22 @@ export const postsQuery = graphql`
       }
     }
   }
+`;
+
+const Wrapper = styled.div`
+  height: 100vh;
+  width: 100vw;
+`;
+
+const DarkSpace = styled.div`
+  background: ${({ theme }) => theme.darkBackground};
+  height: 50%;
+  flex: none;
+  position: fixed;
+  height: 50vh;
+  left: 0;
+  right: 0;
+  z-index: 1;
 `;
 
 export default Index;

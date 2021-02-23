@@ -4,10 +4,7 @@ import Fonts from './Fonts';
 import OverridePrism from './OverridePrism';
 import { theme } from './styled';
 
-console.log('theme.lightBackground', theme.lightBackground);
-
 export default function GlobalStyles() {
-  console.log('theme.lightBackground', theme.lightBackground);
   return (
     <>
       <Fonts />
@@ -27,8 +24,10 @@ export default function GlobalStyles() {
           body {
             margin: 0;
             padding: 0;
-            font-family: 'Inter UI', -apple-system, BlinkMacSystemFont, 'Roboto',
-              'Segoe UI', Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+              'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 나눔고딕,
+              'Nanum Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', arial, 돋움,
+              Dotum, Tahoma, Geneva, sans-serif;
             font-size: 1rem;
             font-weight: 600;
             line-height: 1.54;
@@ -43,8 +42,8 @@ export default function GlobalStyles() {
               font-size: 1rem;
             }
 
-            background-color: ${theme.darkBackground} !important;
-            color: ${theme.darkColor} !important;
+            background-color: ${theme.lightBackground} !important;
+            color: ${theme.lightColor} !important;
           }
 
           h1,
@@ -160,7 +159,6 @@ export default function GlobalStyles() {
             margin: 0 2px;
             border-radius: 5px;
             font-size: 0.9rem;
-            background: ${theme.darkBackgroundSecondary};
           }
 
           pre {
@@ -216,12 +214,10 @@ export default function GlobalStyles() {
           td {
             border: 1px solid ${theme.lightColor};
             padding: 10px;
-            border-color: ${theme.darkColor};
           }
 
           th {
             background: ${theme.lightBackgroundSecondary};
-            background: ${theme.darkBackgroundSecondary};
           }
 
           ul,
@@ -250,7 +246,6 @@ export default function GlobalStyles() {
             border: none;
             background: ${theme.lightBorderColor};
             height: 1px;
-            background: ${theme.darkBorderColor};
           }
 
           .hidden {
