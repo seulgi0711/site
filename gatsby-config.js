@@ -86,5 +86,12 @@ module.exports = {
         exclude: ['/tag/*'],
       },
     },
+    {
+      resolve: 'gatsby-plugin-google-analytics',
+      options: {
+        trackingId: '263169242',
+        head: true,
+      },
+    },
   ],
 };
