@@ -61,7 +61,9 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
               <CoverImage fluid={coverImage.childImageSharp.fluid} />
             )}
             <MDXRenderer>{body}</MDXRenderer>
-            <Comment siteUrl={siteUrl} path={path} title={title} />
+            <CommentWrapper>
+              <Comment siteUrl={siteUrl} path={path} title={title} />
+            </CommentWrapper>
             <Navigation2
               previousPath={previous?.frontmatter?.path}
               previousLabel={previous?.frontmatter?.title}
@@ -138,6 +140,10 @@ const ExploreMore = styled.div`
 const SocialWrapper = styled.div`
   margin-top: 20px;
   color: ${({ theme }) => theme.darkColor};
+`;
+
+const CommentWrapper = styled.div`
+  margin-top: 120px;
 `;
 
 export default BlogPostTemplate;
