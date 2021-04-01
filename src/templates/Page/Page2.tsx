@@ -30,6 +30,11 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
     id,
     body,
   } = data.mdx;
+  const {
+    site: {
+      siteMetadata: { siteUrl },
+    },
+  } = data;
   const { next, previous } = pageContext;
 
   return (
@@ -56,7 +61,7 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
               <CoverImage fluid={coverImage.childImageSharp.fluid} />
             )}
             <MDXRenderer>{body}</MDXRenderer>
-            <Comment path={path} title={title} />
+            <Comment siteUrl={siteUrl} path={path} title={title} />
             <Navigation2
               previousPath={previous?.frontmatter?.path}
               previousLabel={previous?.frontmatter?.title}
@@ -158,6 +163,11 @@ export const pageQuery = graphql`
       id
       body
       excerpt
+    }
+    site {
+      siteMetadata {
+        siteUrl
+      }
     }
   }
 `;

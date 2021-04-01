@@ -2,13 +2,14 @@ import { Disqus } from 'gatsby-plugin-disqus';
 import React from 'react';
 
 type Props = {
+  siteUrl: string,
   path: string,
   title: string,
 };
 
-const Comment = ({ path, title }: Props) => {
+const Comment = ({ siteUrl, path, title }: Props) => {
   const config = {
-    url: path,
+    url: `${siteUrl}${path}`,
     identifier: path,
     title,
   };
