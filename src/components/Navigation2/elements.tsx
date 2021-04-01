@@ -6,7 +6,7 @@ export const NavigationWrapper = styled.div`
   justify-content: center;
   width: 1024px;
   max-width: 100%;
-  margin: 400px 0 40px;
+  margin: 120px 0 40px;
 `;
 
 export const Button = styled.span`
