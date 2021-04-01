@@ -5,6 +5,7 @@ import { MDXRenderer } from 'gatsby-plugin-mdx';
 // import { MDXRenderer } from 'gatsby-plugin-mdx';
 import React from 'react';
 import Socials from '../../components/About/Socials';
+import Comment from '../../components/Comment/Comment';
 // import { DarkSpace } from '../../components/elements';
 import GlobalStyles from '../../components/GlobalStyles';
 // import Layout2 from '../../components/Layout2';
@@ -55,6 +56,7 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
               <CoverImage fluid={coverImage.childImageSharp.fluid} />
             )}
             <MDXRenderer>{body}</MDXRenderer>
+            <Comment path={path} title={title} />
             <Navigation2
               previousPath={previous?.frontmatter?.path}
               previousLabel={previous?.frontmatter?.title}
