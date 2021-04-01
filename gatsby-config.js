@@ -13,7 +13,7 @@ module.exports = {
     logoText: '낙타의 블로그',
     defaultTheme: 'dark',
     postsPerPage: 10000,
-    siteUrl: 'https://nakta.dev/',
+    siteUrl: 'https://nakta.dev',
   },
   plugins: [
     `babel-preset-gatsby`,
