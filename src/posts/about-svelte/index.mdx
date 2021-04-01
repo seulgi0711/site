@@ -1,0 +1,45 @@
+---
+title: "React, Svelte 비교"
+path: "/react-svelte"
+date: "2020-12-27"
+coverImage: "../../images/windows.jpg"
+author: "nakta"
+excerpt: "React, Svelte 비교하기"
+tags: ["react", "svelte"]
+---
+
+
+## HTML 표현 방식
+
+### React
+
+JSX를 이용해서 유사 HTML을 표현한다.
+
+camel-case를 사용해서 attribute및 props를 표현한다.
+
+```tsx
+<input onChange={handleChange} value={value} />
+```
+
+### Svelte
+
+HTML과 유사한 형태로 HTML을 표현한다. 말그대로 유사한것이기 때문에 컴파일러를 통해 컴파일 해야 한다.
+
+```js
+<input on:change={handleChange} value={value} />
+```
+
+
+## Prop 표현 방식
+
+### React
+
+컴포넌트 파라미터로 props를 받아올 수 있다.
+
+
+
+### Svelte
+
+'export' 구문으로 props를 받아올 수 있다.
+export는 값을 내보내는 의미인데 실질적으로는 상위 컴포넌트로부터 값을 받아오는데 사용된다. 반대 의미로 이상하다...
+
