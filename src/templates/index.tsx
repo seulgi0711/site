@@ -7,11 +7,11 @@ import SEO from '../components/seo';
 import styled, { theme } from '../components/styled';
 
 type Props = {
-  data: any,
+  data: any;
   pageContext: {
-    nextPagePath: string,
-    previousPagePath: string,
-  },
+    nextPagePath: string;
+    previousPagePath: string;
+  };
 };
 
 const Index = ({ data, pageContext }: Props) => {

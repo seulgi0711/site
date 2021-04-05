@@ -13,13 +13,18 @@ import {
 } from './elements';
 
 type Props = {
-  title: string,
-  date: string,
-  path: string,
+  title: string;
+  date: string;
+  path: string;
   coverImage: {
     childImageSharp: {
       fixed: FixedObject;
       fluid: FluidObject;
+    };
+  };
+  author: string;
+  excerpt: string;
+  tags: string[];
 };
 
 const Post = ({ title, date, path, coverImage, excerpt, tags }: Props) => {
