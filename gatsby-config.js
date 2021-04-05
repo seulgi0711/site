@@ -92,11 +92,5 @@ module.exports = {
         trackingIds: ['G-KDQP6C6RCH'],
       },
     },
-    {
-      resolve: `gatsby-plugin-disqus`,
-      options: {
-        shortname: `nagtayi-beulrogeu`,
-      },
-    },
   ],
 };

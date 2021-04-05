@@ -62,7 +62,7 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
             )}
             <MDXRenderer>{body}</MDXRenderer>
             <CommentWrapper>
-              <Comment siteUrl={siteUrl} path={path} title={title} />
+              <Comment />
             </CommentWrapper>
             <Navigation2
               previousPath={previous?.frontmatter?.path}
