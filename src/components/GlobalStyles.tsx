@@ -29,7 +29,7 @@ export default function GlobalStyles() {
               'Nanum Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', arial, 돋움,
               Dotum, Tahoma, Geneva, sans-serif;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: normal;
             line-height: 1.54;
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;

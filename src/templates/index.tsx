@@ -7,11 +7,11 @@ import SEO from '../components/seo';
 import styled, { theme } from '../components/styled';
 
 type Props = {
-  data: any,
+  data: any;
   pageContext: {
-    nextPagePath: string,
-    previousPagePath: string,
-  },
+    nextPagePath: string;
+    previousPagePath: string;
+  };
 };
 
 const Index = ({ data, pageContext }: Props) => {
@@ -58,9 +58,9 @@ export const postsQuery = graphql`
                 fixed(width: 320, height: 214) {
                   ...GatsbyImageSharpFixed
                 }
-                # fluid(maxWidth: 800) {
-                #   ...GatsbyImageSharpFluid
-                # }
+                fluid(maxWidth: 320, maxHeight: 214) {
+                  ...GatsbyImageSharpFluid
+                }
               }
             }
           }

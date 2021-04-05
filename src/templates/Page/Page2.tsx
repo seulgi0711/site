@@ -62,7 +62,7 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
             )}
             <MDXRenderer>{body}</MDXRenderer>
             <CommentWrapper>
-              <Comment siteUrl={siteUrl} path={path} title={title} />
+              <Comment />
             </CommentWrapper>
             <Navigation2
               previousPath={previous?.frontmatter?.path}
@@ -160,7 +160,7 @@ export const pageQuery = graphql`
         tags
         coverImage {
           childImageSharp {
-            fluid(maxWidth: 760) {
+            fluid(maxWidth: 760, maxHeight: 300) {
               ...GatsbyImageSharpFluid
             }
           }

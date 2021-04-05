@@ -1,5 +1,5 @@
 import { Link } from 'gatsby';
-import { FixedObject } from 'gatsby-image';
+import Img, { FixedObject, FluidObject } from 'gatsby-image';
 import { take } from 'rambdax';
 import React from 'react';
 import styled from '../styled';
@@ -13,17 +13,18 @@ import {
 } from './elements';
 
 type Props = {
-  title: string,
-  date: string,
-  path: string,
+  title: string;
+  date: string;
+  path: string;
   coverImage: {
     childImageSharp: {
-      fixed: FixedObject,
-    },
-  },
-  author: string,
-  excerpt: string,
-  tags: string[],
+      fixed: FixedObject;
+      fluid: FluidObject;
+    };
+  };
+  author: string;
+  excerpt: string;
+  tags: string[];
 };
 
 const Post = ({ title, date, path, coverImage, excerpt, tags }: Props) => {
@@ -44,11 +45,11 @@ const Post = ({ title, date, path, coverImage, excerpt, tags }: Props) => {
             )}
           </Meta>
 
-          {/* {coverImage && (
+          {coverImage && (
             <ImageWrapper>
               <CoverImage fixed={coverImage.childImageSharp.fixed} />
             </ImageWrapper>
-          )} */}
+          )}
         </UpperSide>
       </PostContent>
     </PostWrapper>
@@ -56,10 +57,9 @@ const Post = ({ title, date, path, coverImage, excerpt, tags }: Props) => {
 };
 
 const ImageWrapper = styled.div`
-  /* position: absolute;
-  bottom: calc(100% + 70px); */
-  width: 320px;
+  width: 100%;
   height: 214px;
+  margin-top: 1em;
 `;
 
 const Date = styled.div`
@@ -77,8 +77,14 @@ const VerticalEllipsis = styled.div`
 const UpperSide = styled.div`
   position: absolute;
   bottom: calc(100% + 80px);
+  width: 100%;
   z-index: 1;
   color: ${({ theme }) => theme.darkColor};
+`;
+
+const CoverImage = styled(Img)`
+  width: 100% !important;
+  height: 100% !important;
 `;
 
 export default Post;

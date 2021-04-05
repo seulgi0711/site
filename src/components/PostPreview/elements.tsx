@@ -2,7 +2,7 @@ import { Link } from 'gatsby';
 import styled from '../styled';
 
 export const PostWrapper = styled.div`
-  width: 320px;
+  min-width: 320px;
   max-width: 800px;
   text-align: left;
   padding: 20px;
@@ -40,7 +40,6 @@ export const Title = styled.h2`
 
 export const Meta = styled.div`
   font-size: 1rem;
-  /* margin-bottom: 30px; */
 `;
 
 export const TagListWrapper = styled.div`

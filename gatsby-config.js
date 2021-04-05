@@ -60,6 +60,7 @@ module.exports = {
       resolve: `gatsby-plugin-mdx`,
       options: {
         gatsbyRemarkPlugins: [
+          `gatsby-remark-autolink-headers`,
           {
             resolve: 'gatsby-remark-embed-video',
             options: {
@@ -90,12 +91,6 @@ module.exports = {
       resolve: 'gatsby-plugin-google-gtag',
       options: {
         trackingIds: ['G-KDQP6C6RCH'],
-      },
-    },
-    {
-      resolve: `gatsby-plugin-disqus`,
-      options: {
-        shortname: `nagtayi-beulrogeu`,
       },
     },
   ],
