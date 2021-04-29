@@ -60,4 +60,19 @@ function Velog() {
   );
 }
 
-export { Twitter, GitHub, Medium, Patreon, Velog };
+function Email() {
+  return (
+    <a href="mailto:hjlsgj@gmail.com" target="_blank">
+      <svg width="32" height="32" fill="none" viewBox="0 0 32 32" data-testid="email"><path fill="currentColor" d="M16 16.871L1.019 5H30.98L16 16.871zm0 3.146L1 8.131V27h30V8.131L16 20.017z"></path></svg>
+      {/* <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path
+          fill="currentColor"
+          d="M16 16.871L1.019 5H30.98L16 16.871zm0 3.146L1 8.131V27h30V8.131L16 20.017z"
+          fill={theme.darkBackground}
+        ></path>
+      </svg> */}
+    </a>
+  );
+}
+
+export { Twitter, GitHub, Medium, Patreon, Velog, Email };
