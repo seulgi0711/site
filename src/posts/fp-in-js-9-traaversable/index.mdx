@@ -1,0 +1,362 @@
+---
+title: '함수형 프로그래밍 in JS (9) - Traversable'
+path: '/fp-in-js-9-traversable'
+date: '2020-02-17'
+coverImage: '../../images/fp.jpeg'
+author: 'nakta'
+excerpt: 'FP in JS Traversable'
+tags: ['FP', '함수형 프로그래밍', 'Applicative', 'sequence', 'traverse']
+---
+
+> 자바스크립트로 하는 함수형 프로그래밍에 대해서 글을 써볼까 합니다. 우연한 기회로 함수형 프로그래밍에 대한 관심을 갖게 됐고, 프론트엔드 개발을 하면서 적용했던 함수형 프로그래밍에 대해서 다뤄볼 예정입니다.
+
+**[시작 글: 코드 스타일](/fp-in-js-1-code-style)**
+
+**[두 번째 글: 함수 컴포지션, 커링](/fp-in-js-2-composition-currying)**
+
+**[세 번째 글: 함수형 프로그래밍의 특징](/fp-in-js-3-about-fp)**
+
+**[네 번째 글: 펑터, Maybe](/fp-in-js-4-functor-maybe)**
+
+**[다섯 번째 글: Either](/fp-in-js-5-either)**
+
+**[여섯 번째 글: Either](/fp-in-js-6-io-future)**
+
+**[일곱 번째 글: Either](/fp-in-js-7-monad-chaining)**
+
+**[여덟 번째 글: Either](/fp-in-js-8-applicative-functor)**
+
+오늘은 **Traversable**에 대해서 살펴보도록 하겠습니다. Traversable의 뜻이 뭘까요?
+
+> Traversable
+>
+> 1.  가로지르다, 횡단하다 2. 횡단; 횡단 지역
+
+네이버 영어 사전을 찾아보니 가로지르다, 횡단하다 라는 뜻이 있습니다. 오늘 알아 볼 **Traversabler**이 딱 이 뜻과 매치되게 동작합니다.
+
+## 리스트 안의 상자들
+
+함수형 프로그래밍으로 코드를 작성하다 보면 여러가지 상자들을 이용하게 됩니다. 그런데 이 상자들이 처리하기 곤란한 상황들이 나올때가 종종 생깁니다. 대표적인 예가 리스트 안의 상자 형태입니다.
+
+```
+[Just(1), Just(2)]
+```
+
+이런 리스트 안의 상자는 데이터를 처리하기 위해서 `map(map(...))` 과 같은 형태로 컴포지션을 이어 나가거나 리스트를 `순회하면서 getOrElse`로 값을 꺼내서 처리해야 합니다.
+
+만약 이런 데이터 형태를 `Just([1, 2])`와 같은 형태로 바꿀 수 있다면 리스트를 순회하면서 값을 꺼내지 않아도 되고 map을 한 번만 이용해서 컴포지션을 할 수 있지 않을까요?
+
+## 책 제목 연결하기
+
+늘 그렇듯 상황을 먼저 살펴보도록 하겠습니다.
+
+[애플리케이티브 펑터](/fp-in-js-8-applicative-functor)에 대해서 썼던 글에서 사용했던 예제를 다시 사용하겠습니다.
+
+**책 리스트**가 아래와 같이 있습니다. 이 책 리스트에서 원하는 책의 아이디를 넘겨 그 책에 해당하는 제목을 하나의 스트링으로 만들어 반환하는 기능을 구현해야 한다고 합시다.
+
+```js
+const books = [
+  { id: 'book1', title: 'coding with javascript', author: 'Chris Minnick, Eva Holland' },
+  { id: 'book2', title: 'speaking javaScript', author: 'Axel Rauschmayer' },
+];
+```
+
+그리고 이 책 리스트에서 **책을 찾는 함수**가 있습니다. 이 함수의 결과는 **Maybe를 반환**합니다.
+
+```js
+// getBookById :: Book[] -> string -> Maybe<Book>
+const getBookById = curry((books, id) => {
+  return pipe(
+    find(propEq('id', id)),
+    Maybe.of
+  )(books)
+});
+
+getBookById(books, 'book1'); // Just(book1)
+getBookById(books, 'book2'); // Just(book2)
+getBookById(books, 'book3'); // Nothing()
+```
+
+다음으로 책 리스트를 받아서 제목을 연결해서 반환하는 함수를 만들어 보겠습니다.
+
+```js
+// joinBooksTitle :: Book[] -> string
+const joinBooksTitle = pipe(
+  pluck('title'), // map(prop('title')) 과 같은 동작을 합니다.
+  join(', ')
+);
+
+joinBooksTitle([
+  { id: 'book1', title: 'coding with javascript', author: 'Chris Minnick, Eva Holland' },
+  { id: 'book2', title: 'speaking javaScript', author: 'Axel Rauschmayer' }
+]); // codeing with javascript, speaking javascript
+```
+
+`joinBooksTitle` 함수를 이용하기 위해서 원하는 책 리스트를 반환해주는 함수를 만들어보겠습니다. 이전에 정의된 `getBookById`를 이용합니다.
+
+```js
+// getBooksByIds :: string[] -> Book[] -> Maybe<Book>[]
+const getBooksByIds = (ids, books) => {
+  return map(getBookById(books), ids);
+}
+```
+
+### 순회하며 상자 풀어주기
+
+자 이제 이 함수들을 조합해서 원하는 책 제목을 하나로 이어주는 함수를 만들겠습니다.
+
+```js
+const getOrElse = curry((defaultValue, fn, maybe) => {
+  return maybe.isNothing ? defaultValue : fn(maybe.$value);
+});
+
+// joinBooksTitleByBookIds :: string[] -> Book[] -> string
+const joinBooksTitleByBookIds = curry((bookIds, books) => {
+  return pipe(
+    getBooksByIds(bookIds),
+    map(getOrElse('', identity)),
+    joinBooksTitle
+  )(books)
+});
+
+joinBooksTitleByBookIds(['book1', 'book2'], books);
+// coding with javascript, speaking javaScript
+```
+
+자 완성이 됐습니다.
+
+`joinBooksTItleByBookIds` 함수를 한줄씩 살펴보도록 하죠.
+
+```js
+// joinBooksTitleByBookIds :: string[] -> Book[] -> string
+const joinBooksTitleByBookIds = curry((bookIds, books) => {
+  return pipe(
+    getBooksByIds(bookIds),
+    map(getOrElse('', identity)),
+    joinBooksTitle
+  )(books)
+});
+```
+
+우선 펑션 컴포지션의 첫 째 줄인 `getBooksByIds(bookIds)`의 결과 값은 `Maybe<Book>[]` 형태로 값이 반환됩니다. 즉, 명시적으로 표현하면 아래와 같은 형태 입니다.
+
+```js
+[
+  Just({ id: 'book1', title: 'coding with javascript', author: 'Chris Minnick, Eva Holland' }),
+  Just({ id: 'book2', title: 'speaking javaScript', author: 'Axel Rauschmayer' })
+]
+```
+
+바로 리스트 안의 상자 형태입니다. 그런데 우리가 만들었던 `joinBooksTitle` 함수는 Maybe 책 리스트가 아닌 그냥 책 리스트를 파라미터로 받아야 합니다. 그래서 두 번째 합성에서 `map(getOrElse('', identity))`로 리스트를 순회하면서 각 `Maybe<Book>`을 `Book` 으로 바꿔주는 작업을 해줬습니다.
+
+### sequence로 뒤집어 까기
+
+우리는 지금 `[Just(1), Just(2)]`의 형태를 `[1, 2]` 형태로 바꾸기 위해 `map`과 `getOrElse`를 조합했습니다. 이 방법도 좋은 방법이지만 `[Just(1), Just(2)]`를 `Just([1, 2])`의 형태로 바꿔서 처리할 수 있는 방법이 있습니다.
+
+이런 형태의 데이터 변경을 해줄 함수의 이름은 `sequence`입니다.
+
+```js
+const sequence = curry((of, applicative) => {
+  if (typeof applicative.sequence === 'function') {
+    return applicative.sequence(of);
+  }
+  return applicative.reduce((acc, currentValue) => {
+    return ap(map(append, currentValue), acc);
+  }, of([]));
+});
+
+sequence(Maybe.of, [Maybe.of(1), Maybe.of(2)]); // Just([1, 2])
+```
+
+뭔가 많이 복잡해 보이는데 하나씩 살펴보겠습니다.
+
+우선 처음 세 줄은 리스트 타입을 제외한 Maybe, Either, IO 등 applicative 타입의 상자들에 대한 처리입니다. 각 상자는 sequence를 구현하게 되고 이 sequence를 이용하게 됩니다.
+
+사실 명시적으로 List 타입의 새로운 클래스를 만들어서 Mayge나 Either 등과 같이 직접 새로운 타입을 구현해도 되지만 자바스크립트의 기본 array 타입을 쓰기 위해 저런 분기를 하게 됐습니다.
+
+`reduece`라는 array의 메소드를 이용합니다. 초기값은 `of[]`이기 때문에 여기서는 `Just([])`가 초기값으로 설정됩니다.
+
+이제 reduce 콜백 부분을 살펴보겠습니다.
+
+```js
+(acc, currentValue) => {
+  return ap(map(append, currentValue), acc);
+}
+```
+
+**콜백 동작**
+
+- acc: `Just([])`
+- currentValue: `Just(book1)`
+
+acc는 초기값인 Just([])가 되고 currentValue는 첫번째 책인 Just(book1)이 됩니다. 편의상 book1이라고 지칭하겠습니다.
+
+이제 구현부를 해당 값으로 치환해서 생각해보도록 하죠.
+
+```js
+ap(map(append, Just(book1)), Just([]))
+```
+
+자, 이 상태에서 `map(append, Just(book1))`을 하게 되면 book1에 append를 실행한 결과를 Just에 다시 담아서 반환해 주게 됩니다. 이 때, `append 함수`는 첫 번재 파라미터 값을 두 번째 리스트의 뒤에 붙여주는 `커리 함수`입니다. append 함수는 파라미터가 두 개 필요한데 첫 번째 파라미터만 넘겨줬기 때문에 두 번째 리스트를 받아줄 새로운 함수를 Just에 담아서 반환하게 됩니다.
+
+```js
+ap(
+  Just((list) => list.append(book1)),
+  Just([])
+)
+```
+
+`Just의 $value 값이 함수다`라는 말은 applicative를 이용할 수 있겠다로 이어지게 됩니다. 즉, ap 함수를 이용할 수 있다는 뜻입니다. ap 함수는 상자안의 함수를 첫 번째 파라미터로 받고 상자안의 값을 두 번째 파라미터로 받아서 함수에 값을 적용한 결과를 상자에 담아줍니다.
+
+> Applicative와 ap함수에 대한 내용은 [애플리케이티브 펑터](/fp-in-js-8-applicative-functor) 글을 참고하시기 바랍니다.
+
+결과적으로 첫 번째 싸이클이 끝나고 `Just([book1])`이 acc가 됩니다.
+
+이제 두 번째 싸이클에는 acc와 currentValue는 아래 값을 가지고 시작합니다.
+
+- acc: `Just([book1])`
+- currentValue: `Just(book2)`
+
+그리고 위 동작으로 실행된 결과로 `Just([book1, book2])`가 됩니다.
+
+이제 우리는 sequence 함수를 이용해서 `[Just[book1], Just[book2]]` 형태를 `Just[book1, book2]`로 바꿀 수 있게 됐습니다. 밖을 감싸는 리스트와 안의 값을 감싸는 Just를 뒤집어 까서 서로 위치를 바꿔주게 됐습니다.
+
+이 sequence 함수를 이용해서 `joinBooksTitleByBookIds` 함수를 다시 구현해 보도록 하겠습니다.
+
+```js
+// joinBooksTitleByBookIds :: string[] -> Book[] -> string
+const joinBooksTitleByBookIds = curry((bookIds, books) => {
+  return pipe(
+    getBooksByIds(bookIds), // [Just(book1), Just(book2)]
+    sequence(Maybe.of) // Just([book1, book2])
+    getOrElse('', joinBooksTitle)
+  )(books)
+});
+
+joinBooksTitleByBookIds(['book1', 'book2'], books);
+// coding with javascript, speaking javaScript
+```
+
+sequence를 이용한 구현이 완성됐습니다. 그런데 사실 제가 생각하기에도 이렇게 복잡한 sequence를 써서 구현했을 때 메리트를 잘 모르겠습니다.
+
+## map + sequence = traverse
+
+개인적인 생각으로는 sequence 함수를 썼을 때 가독성의 차이도 크게 없고 그렇다고 라인수가 더 줄어드는것고 아니기 때문에 큰 장점을 못 느끼지 않나 싶습니다.
+
+그래서 이 sequence 함수를 보강할 `traverse`에 대해서 말해보겠습니다. 제목과 같이 `map`과 `sequence`를 한 번에 해주는 함수라고 이해하면 쉬울것 같습니다.
+
+```js
+traverse(Maybe.of, getBookByIds(bookIds), books);
+// Just([book1, book2])
+```
+
+`sequence` 함수가 두 개의 파라미터를 받는다면, `traverse` 함수는 `sequence`의 파라미터 두 개 사이에 applicative를 반환해주는 함수를 하나 더 받습니다. `sequence` 구현은 아래와 같습니다.
+
+```js
+const traverse = curry((of, fn, traversable) => {
+  if (typeof traversable.traverse === "function") {
+    return traversable.traverse(of, fn);
+  }
+  return sequence(of, map(fn, traversable));
+});
+```
+
+`sequence`와 마찬가지로 첫 두 줄은 `traverse`를 직접 구현한 `traversable` 객체인 경우 `traverse`를 그대로 실행해 줍니다. 그렇지 않은 일반 array 타입인 경우 `map`을 먼저 실행한 후 `sequence`를 실행해 줍니다.
+
+앞에 살펴봤는 예제를 `traverse`함수를 이용해서 구현해보도록 합니다.
+
+```js
+const joinBooksTitleByBookIds = (books, bookIds) => {
+  return pipe(
+    traverse(Maybe.of, getBookById(books)),
+    getOrElse("", joinBooksTitle)
+  )(bookIds);
+};
+
+joinBooksTitleByBookIds(['book1', 'book2'], books);
+// coding with javascript, speaking javaScript
+```
+
+어떤가요? 이전에 살펴봤던 두 가지 구현 방법보다 훨씬 깔끔한것 같습니다.
+
+## Traversable
+
+이제 `Traaversable`을 설명드려야 할 타이밍인것 같습니다. `traverse`가 나왔기 때문이죠. Traversable도 특정 메소드를 구현한 타입이라고 생각하면 될것 같습니다.
+
+> **Traversable**
+> traverse를 구현한 타입
+
+기존에 살펴봤던 여러가지 타입과 마찬가지로 `traverse`를 구현하면 Traversable이라고 할수있습니다.
+
+사실상 `sequence` 함수는 `traverse`에서 사용하기 위해 있다고 생각해도 될것 같습니다.
+
+### array는 traversable이 아니다
+
+traversable은 sequence와 traverse를 구현해야 된다고 했습니다. 그런데 우리가 지금까지 살펴봤던 예제는 array에서 sequence와 traverse를 사용해왔습니다.
+
+그런데 **사실은 array 자체가 구현한 sequence와 traverse를 사용하지는 않았습니다**. 즉, array 타입은 Traversable이 아닙니다.
+
+정말 Traversable로 만들기 위해서는 두 가지 방법이 있습니다.
+
+1. Array.prototype에 traverse를 확장함수로 정의한다.
+2. Maybe나 Either와 같이 class를 이용해 List를 정의해서 사용한다.
+
+확장 함수를 정의하는 방법은 prototype에 traverse 함수를 추가하면 됩니다.
+
+```js
+Array.prototype.traverse = function(of, fn) {
+  return this.reduce((acc, currentValue) => {
+    return fn(currentValue).map(append).ap(acc);
+  }, of([]));
+};
+```
+
+이렇게 하면 array 자체도 traverse를 정의한것이 되기 때문에 Traversable이라 할 수 있습니다. 하지만, 그다지 권장하는 방법은 아닙니다. 직접 확장한 traverse 라는 함수가 다른 라이브러리에서 다시 한번 정의하는 경우 정의가 달라질 수 있기 때문이죠. 한마디로 의도치 않은 동작을 할 수 도 있게 됩니다.
+
+그렇다면 두 번째 방법인 List 타입을 만들어 사용할 수 있습니다만... 저 같은 경우 굳이 traverse를 구현한 새로한 리스트 타입이 필요하지 않는것 같습니다. 위에 만든 traverse 함수를 이용하면 traversable 인 경우 직접 구현한 traverse를 실행하고 리스트인 경우에 대한 처리가 따로 들어가기 때문에 번거롭게 리스트 타입을 만들 필요가 없게 되는거죠. 사실 이 부분은 개인 선호에 따라 달라질 수 있기 때문에 자신이 원하는 방식으로 구현하면 될것 같습니다.
+
+## All or nothing
+
+`traverse` 함수는 `all or nohting` 입니다. 우리가 계속 살펴봤던 리스트 안에는 모두 Just 만 있었습니다.
+
+```js
+sequence(Maybe.of, [Just(1), Just(2)]); // Just([1, 2])
+```
+
+만약 리스트 안에 Nothing이 하나라도 있으면 어떻게 될까요?
+
+```js
+sequence(Maybe.of, [Just(1), Nothing]); // Nothing
+```
+
+결과는 Nothing이 반환 됩니다. 즉, 리스트 항목 중에 하나라도 Nothing이 있으면 모두 Nothing이 되버리는 것이죠.
+
+위 예제 같은 경우, 존재하지 않는 책 아이디를 넘기게 되면 결국 아무것도 출력하지 못하게 됩니다.
+
+```js
+const books = [
+  { id: 'book1', title: 'coding with javascript', author: 'Chris Minnick, Eva Holland' },
+  { id: 'book2', title: 'speaking javaScript', author: 'Axel Rauschmayer' },
+];
+
+const joinBooksTitleByBookIds = (books, bookIds) => {
+  return pipe(
+    traverse(Maybe.of, getBookById(books)),
+    getOrElse("", joinBooksTitle)
+  )(bookIds);
+};
+
+joinBooksTitleByBookIds(['book1', 'book2', 'book3'], books); // ''
+```
+
+이런 경우 유효한 책만이라도 보여주고 싶다면 traverse 함수는 적합하지 않습니다.
+
+결과적으로 상황에 따라서 필요한 데이터의 형태가 다를 수 있기 때문에 traverse는 때에 따라 적절히 사용해야 합니다.
+
+## 정리
+
+리스트 안의 상자 형태의 데이터를 상자안의 리스트로 변경할 때 tarvers 함수를 이용합니다.
+
+Traversable은 tarverse 를 구현한 타입입니다.
+
+traverse는 all or nothing이기 때문에 리스트 항목 중 하나라도 Nohting과 같은 타입인 경우 Nothing이 반환 되기 때문에 상황에 따라 필요한 경우에 사용하는게 좋습니다.

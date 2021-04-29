@@ -111,6 +111,10 @@ const Content = styled.div`
   padding: 20px;
   color: ${({ theme }) => theme.lightColor};
 
+  .anchor {
+    margin-right: .5em;
+  }
+
   @media (max-width: 684px) {
     margin-top: 0;
   }

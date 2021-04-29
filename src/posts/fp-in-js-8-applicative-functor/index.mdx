@@ -1,0 +1,406 @@
+---
+title: '함수형 프로그래밍 in JS (8) - Applicative Functor'
+path: '/fp-in-js-8-applicative-functor'
+date: '2019-12-31'
+coverImage: '../../images/fp.jpeg'
+author: 'nakta'
+excerpt: 'FP in JS Applicative Functor'
+tags: ['FP', '함수형 프로그래밍', 'Applicative', 'AP']
+---
+
+> 자바스크립트로 하는 함수형 프로그래밍에 대해서 글을 써볼까 합니다. 우연한 기회로 함수형 프로그래밍에 대한 관심을 갖게 됐고, 프론트엔드 개발을 하면서 적용했던 함수형 프로그래밍에 대해서 다뤄볼 예정입니다.
+
+**[시작 글: 코드 스타일](/fp-in-js-1-code-style)**
+
+**[두 번째 글: 함수 컴포지션, 커링](/fp-in-js-2-composition-currying)**
+
+**[세 번째 글: 함수형 프로그래밍의 특징](/fp-in-js-3-about-fp)**
+
+**[네 번째 글: 펑터, Maybe](/fp-in-js-4-functor-maybe)**
+
+**[다섯 번째 글: Either](/fp-in-js-5-either)**
+
+**[여섯 번째 글: Either](/fp-in-js-6-io-future)**
+
+**[일곱 번째 글: Either](/fp-in-js-7-monad-chaining)**
+
+이번 글에서는 애플리케이티브 펑터에 대해서 알아보도록 하겠습니다. 우선 애플리케이티브에 대해서 알아보기 전에 상황 하나를 같이 살펴보도록 하겠습니다.
+
+## 책 두 권이 필요해
+
+우리는 아래 책 목록에서 책 두 권을 찾은 다음 title 값을 하나의 스트링으로 변환하는 작업을 하려고 합니다.
+
+```js
+const books = [
+  { id: 'book1', title: 'coding with javascript', author: 'Chris Minnick, Eva Holland' },
+  { id: 'book2', title: 'speaking javaScript', author: 'Axel Rauschmayer' },
+];
+```
+
+id로 책을 가져오는 함수를 만듭니다.
+
+```js
+const getBookById = curry((books, id) => {
+  return pipe(
+    find(propEq('id', id)),
+    Maybe.of
+  )(books)
+});
+
+getBookById(books, 'book1'); // Just({id: 'book', ...})
+getBookById(books, 'book2'); // Just({id: 'book', ...})
+```
+
+book1과 book2의 title을 연결하는 함수를 만들어 보도록 하겠습니다.
+
+```js
+const concatBooksTitle = curry((book1, book2) => {
+  return `${book1.title}, ${book2.title}`;
+});
+```
+
+이제 함수를 조합해 보도록 하겠습니다. 책 두 권을 찾아서 `concatBooksTitle` 함수에 넘겨주면 원하는 값을 얻어낼 수 있을것 같습니다. 우리가 만든 `getBookById`로 책을 찾을 수 있습니다. 결과는 Maybe 타입 안에 들어있는 책이 반환됩니다. 하지만 문제는 `concatBooksTitle` 함수는 `Just(book)`이 아닌 책 그 자체를 받아야 한다는 점입니다.
+
+### getOrElse로 책 뽑아내기
+
+그렇다면 getOrElse를 이용해서 책을 추출한 다음 concatBooksTitle에 넘기면 될것 같습니다.
+
+```js
+concatBooksTitle(
+  getBookById(books, 'book1').getOrElse(null),
+  getBookById(books, 'book2').getOrElse(null),
+); // coding with javascript, speaking javaScript
+```
+
+근데 이렇게 하면 문제가 있습니다. 만약 책을 찾지 못한다면 어떻게 될까요?
+
+```js
+const result = concatBooksTitle(
+  getBookById(books, 'book1').getOrElse(null),
+  getBookById(books, 'book3').getOrElse(null),
+); // TypeError: Cannot read property 'title' of null
+```
+
+book3라는 책이 없기 때문에 getOrElse에서 null이라는 값이 두 번째 파라미터로 넘겨지고 null에서 title을 접근하기 때문에 타입 에러가 발생합니다.
+
+### chain으로 책 뽑아내기
+
+getOrElse를 이용하면 Maybe의 에러처리 능력을 잃게 되니 chain 메소드를 이용하도록 합시다.
+
+```js
+getBookById(books, 'book1').chain((book1) => {
+  return getBookById(books, 'book2').map((book2) => {
+    return concatBooksTitle(book1, book2);
+  });
+}).getOrElse(null); // coding with javascript, speaking javaScript
+```
+
+`getBookById(books, 'book1')`의 결과값이 `Just(book1)`입니다. 여기에 `chain`으로 연결해서 `getBookById(books, 'book2')`를 실행한 결과를 반환하면 `Just(book2)`가 됩니다. 여기에 마지막으로 다시 한번 `chain`으로 연결해서 book1과 book2 파라미터를 이용해서 `concatBooksTitle`을 실행해 줍니다.
+
+뭔가 코드도 복잡하고 제가 설명한 글도 많이 복잡하게 느껴지실겁니다. 코드가 점점 안으로 들어가는 모습을 보니 콜백 지옥을 연상케 하네요.
+
+## 무엇이 문제인가?
+
+왜 이렇게 코드가 복잡해지거나 에러 처리를 제대로 할수 없거나 하는 걸까요? 이유는 `concatBooksTitle` 함수가 파라미터 두개를 필요로 하는데 책을 찾는 함수가 Maybe 타입의 책을 반환하기 때문입니다.
+
+이 두가지 상황이 합쳐지면서 코드가 복잡하게 변해버린거죠.
+
+지금까지 우리가 살펴본 펑터와 모나드는 모두 상자안의 값과 일반 함수를 사용하는 형태였습니다. 그리고 함수는 상자 안의 값을 파라미터로 받지 않습니다.
+
+```js
+// num, value는 상자에 있는 값이 아니다
+const addMaybe = curry((num, value) => {
+  return Maybe.of(num + value);
+});
+
+Maybe.of(1).map(add(2)); // Just(3)
+Maybe.of(1).chain(addMaybe(2)); // Just(3)
+```
+
+## 눈가리고 아웅
+
+그렇다면 어떻게 해결해야 우아하게 처리할 수 있을까요?
+
+그럼 살짝만 생각을 바꿔서 상자 안의 값을 받아서 처리할 수 있는 함수가 있다면 좋을것 같습니다. 그러면, `concatBooksTitle`을 사용할때 아주 편하게 사용 가능해 질것 같습니다. 아래 코드처럼요.
+
+```js
+concatBooksTitle(
+  getBookById(books, 'book1'),
+  getBookById(books, 'book2')
+); // coding with javascript, speaking javaScript
+```
+
+그런데 여기서 `concatBooksTitle`이 상자를 받아처 처리 한다면 위에 복잡한 구현과 달라질게 없게 되겠죠. 단순히 복잡한 코드가 `concatBooksTitle` 함수 내부로 옮겨지는 것이 될테니까요.
+
+```js
+const concatBooksTitle = curry((book1Maybe, book2Maybe) => {
+  return book1Maybe.chain((book1) => {
+    return book2Maybe.map((book2) => {
+      return `${book1.title}, ${book2.title}`;
+    });
+  }).getOrElse(null); // coding with javascript, speaking javaScript
+});
+```
+
+이런 구현은 우리가 진짜 원하는게 아닐것 같습니다.
+
+## 애플리케이티브 펑터
+
+이제 우리가 마주한 문제를 조금 더 멋지게 해결할 방법이 하나 있습니다. **애플리케이티브 펑터**를 사용한 방법입니다.
+
+> **애플리케이티브 펑터**
+>
+> 1. ap 메소드를 구현한 객체이다.
+> 2. ap 메소드는 **상자 안에 든 값을 받아 이미 들고 있는 함수를 적용해서 상자 안의 새로운 값을 반환**한다.
+
+펑터나 모나드와 비슷하게 특정 조건을 만족하는 `ap`메소드를 구현한 객체라고 말할 수 있습니다.
+
+두 번째 정의에서 보듯 상자 안에 들고있는 값은 함수입니다. 이런 형태가 되는거죠.
+
+```js
+const addTwo = add(2);
+
+Maybe.of(addTwo); // Just(function add() {...})
+```
+
+여기에 ap 메소드로 넘겨주는 파라미터는 **상자 안에 든 값**입니다. 이렇게 넘겨준 **상자 안의 값을 꺼내서 이미 들고 있던 함수에 적용**한다고 생각하면 됩니다. 그리고 펑터와 마찬가지로 상자를 반환해 줍니다.
+
+```js
+Maybe.of(addTwo).ap(Maybe.of(1)); // Just(3)
+```
+
+### ap 구현
+
+이제 애플리케이티브 펑터에 대해서 알았으니 실제로 구현해보도록 하겠습니다. Maybe에 ap 메소드를 추가해봅시다.
+
+```js
+ap(m) {
+  return m.map(this.$value);
+}
+```
+
+구현 자체는 매우 간단합니다. 하나씩 살펴볼까요?
+
+이미 상자 안의 \$value는 함수입니다.
+
+```js
+Maybe.of(addTwo).ap(Maybe.of(1));
+```
+
+ap 메소드에서 this.\$value를 addTwo로 대치하면 `m.map(addTwo)`라고 쓸 수 있습니다.
+
+그리고 ap의 파라미터인 m은 값이 든 Maybe 입니다. 위 코드에서 보기 쉽게 바꾸면 `Maybe.of(1).map(addTwo)`가 됩니다.
+
+어떠신가요? 우리가 계속해서 봤던 패턴과 같습니다.
+
+```js
+Maybe.of(1).map(addTwo) === Maybe.of(addTwo).ap(Maybe.of(1));
+```
+
+사실 이렇게 보면 굳이 ap가 왜 필요할까 하는 생각이 들 수 있습니다. 오히려 펑터를 이용하면 더 간단하게 해결할 수 있는데 한 번 더 꼬아서 생각해야 하기 때문이죠. 하지만 ap가 아주 강력한 힘을 발휘하는 순간이 있습니다. 우리가 앞서 살펴봤던 concatBooksTitle 함수처럼 **파라미터 두개 이상 필요한 상황**입니다.
+
+왜그런지 약간 억지스러운 예제로 바꿔서 살펴보겠습니다. `concatBooksTitle` 함수 내부에 책 한 권은 고정으로 들고 있고 나머지 한 권만 파라미터로 받는 상황으로 바꿔보겠습니다.
+
+```js
+const concatBooksTitle = (postBook) => {
+  const preBook = { id: 'book1', title: 'coding with javascript', author: 'Chris Minnick, Eva Holland' };
+
+  return `${preBook.title}, ${postBook.title}`;
+};
+
+getBookById(books, 'book2')
+  .map(concatBooksTitle)
+  .getOrElse(null); // coding with javascript, speaking javaScript
+```
+
+아주 간단해 지죠. 우리의 코드가 복잡했던 이유는 concatBooksTitle 함수가 책 두 권을 필요로 했기 때문입니다.
+
+### 애플리케이티브 펑터로 해결해보자
+
+이제 ap가 얼마나 강력한지 살펴보도록 하겠습니다. 우리가 위에서 아주 더럽게 짠 코드를 ap를 이용해서 다시 구현해보겠습니다.
+
+```js
+const concatBooksTitle = curry((book1, book2) => {
+  return `${book1.title}, ${book2.title}`;
+});
+
+Maybe.of(concatBooksTitle)
+  .ap(getBookById(books, 'book1'))
+  .ap(getBookById(books, 'book2'))
+  .getOrElse(null); // coding with javascript, speaking javaScript
+```
+
+어떠신가요? 놀랍지 않나요? 이전 코드에 비해서 아주 간단해졌습니다.
+
+### 어떻게 된걸까?
+
+이제 애플리케이티브 펑터가 어떻게 값을 처리했는지 하나씩 살펴보도록 하겠습니다.
+
+```js
+// Maybe의 ap 메소드
+ap(m) {
+  return m.map(this.$value);
+}
+
+
+Maybe.of(concatBooksTitle)
+  .ap(getBookById(books, 'book1'))
+  .ap(getBookById(books, 'book2'))
+  .getOrElse(null);
+```
+
+첫 번 째 줄을 실행하면 `Just(concatBooksTitle)`가 됩니다.
+
+```js
+Maybe.of(concatBooksTitle)
+```
+
+여기에 ap 메소드를 이용해서 Just(book1)을 넘겨 주었죠.
+
+```js
+Maybe.of(concatBooksTitle)
+  .ap(getBookById(books, 'book1'))
+```
+
+ap 메소드의 구현부를 대치하면 this.\$value가 concatBooksTitle이 됩니다. 그러면 이런 모습이 됩니다. `m.map(concatBooksTitle)`
+
+그리고 m을 Just(book1)으로 대치하겠습니다. 이제 이렇게 바뀝니다. `Just(book1).map(concatBooksTitle)`
+
+이 문장을 실행하면 결과는 책 한권을 받는 새로운 함수가 this.\$value에 저장됩니다. 왜냐하면 concatBooksTitle 함수가 커리 함수기 때문에 두 권의 책을 모두 받기 전까지는 함수를 반환하기 때문이죠.
+
+현재 상태는 `Just(책 한권이 더 필요한 concatBooksTitle 함수)` 라고 표현할 수 있습니다.
+
+```js
+Maybe.of(concatBooksTitle)
+  .ap(getBookById(books, 'book1'))
+  .ap(getBookById(books, 'book2'))
+```
+
+여기에 `.ap(getBookById(books, 'book2'))`를 실행하면 ap 메소드의 구현을 다시 대치시킨 결과는 다음과 같습니다.
+
+`Just(book2).map(책 한권이 더 필요한 concatBooksTitle 함수)`
+
+이 실행 결과는 `Just('coding with javascript, speaking javaScript')` 우리가 원하는 값이 Maybe 타입 안으로 들어가게 됩니다.
+
+마지막으로 getOrElse를 이용해서 책 제목이 함쳐진 문자열을 뽑아낼 수 있습니다.
+
+### 애플리케이티브 vs 모나드
+
+우리가 처음 구현했던 모나드 방식과 오늘 살펴본 애플리케이티브 방식을 한번 비교해 보겠습니다.
+
+**모나드**
+
+```js
+getBookById(books, 'book1').chain((book1) => {
+  return getBookById(books, 'book2').map((book2) => {
+    return concatBooksTitle(book1, book2);
+  });
+}).getOrElse(null); // coding with javascript, speaking javaScript
+```
+
+**애플리케이티브**
+
+```js
+Maybe.of(concatBooksTitle)
+  .ap(getBookById(books, 'book1'))
+  .ap(getBookById(books, 'book2'))
+  .getOrElse(null); // coding with javascript, speaking javaScript
+```
+
+사람마다 성향의 차이가 있겠지만 저는 개인적으로 애플리케이티브를 이용해서 구현한 쪽이 더 깔끔한 느낌이 강한것 같습니다.
+
+## 포인트프리 스타일의 ap
+
+이제 한 단계 더 나가서 함수 합성시 유용한 함수를 살펴보겠습니다.
+
+위 예제를 pipe로 연결하려면 어떻게 해야 할까요?
+
+```js
+const getOrElse = curry((defaultValue, maybe) => {
+  return maybe.isNothing ? defaultValue : maybe.$value;
+});
+
+pipe(
+  Maybe.of,
+  maybe => maybe.ap(getBookById(books, 'book1')),
+  maybe => maybe.ap(getBookById(books, 'book2'))
+  getOrElse(null)
+)(concatBooksTitle); // coding with javascript, speaking javaScript
+```
+
+이렇게 하면 위에 구현했던것과 같게 동작할것 같습니다. 두 번째와 세 번째로 넘겨준 함수 모양이 포인트프리 스타일이 아닙니다.
+
+포인트프리 스타일로 코드를 작성하기 위해 도와줄 ap 함수를 만들어보도록 하겠습니다.
+
+```js
+const ap = curry((valueMaybe, fnMaybe) => {
+  return fnMaybe.ap(valueMaybe);
+});
+
+pipe(
+  Maybe.of,
+  ap(getBookById(books, 'book1')),
+  ap(getBookById(books, 'book2')),
+  getOrElse(null)
+)(concatBooksTitle); // coding with javascript, speaking javaScript
+```
+
+값이 들어있는 Maybe와 함수가 들어있는 Maybe를 받아서 ap 메소드를 적용해주는 함수입니다.
+
+이렇게 적용하면 전보다는 확실히 깔끔해진 느낌입니다. 여기서 멈추지 말고 조금만 바꿔보도록 하죠.
+
+### liftA
+
+어차피 함수 하나와 상자 안에 든 파라미터를 받아서 ap 메소드를 실행하면 되기 때문에 이 동작을 하나의 함수로 만들면 조금더 깔끔한 코드를 만들 수 있을것 같습니다.
+
+```js
+const liftA2 = curry((fn, af1, af2) => {
+  return af.map(fn).ap(af2);
+});
+```
+
+우리가 만든 `concatBooksTitle` 함수는 두 개의 파라미터를 받기 때문에 `liftA2`라는 함수 이름에 파라미터 갯수 2를 표현했습니다. `liftA2`의 첫 번째 파라미터로 실행하려고 하는 함수를 넘겨줍니다. 여기서는 `concatBooksTitle`이 되겠지요. 나머지 두 파라미터는 상자 안에 든 값을 넘겨주면 되겠습니다. `Just(book1)`와 `Just(book2)`가 되겠네요.
+
+`liftA2` 함수를 이용해서 구현하면 아래와 같습니다.
+
+```js
+liftA2(
+  concatBooksTitle,
+  getBookById(books, 'book1'),
+  getBookById(books, 'book2')
+).getOrElse(null); // coding with javascript, speaking javaScript
+```
+
+Maybe.of로 concatBooksTitle을 상자에 넣지 않고 한번에 처리할 수 있게 됐습니다.
+
+liftA2는 파라미터 두 개를 받기 때문에 2를 붙였습니다. 이런 방식으로 파라미터 갯수에 따라 liftA뒤에 숫자를 붙여서 함수를 만들어 사용하면 되겠습니다.
+
+```js
+const liftA2 = curry((fn, af1, af2) => {
+  return af.map(fn).ap(af2);
+});
+
+const liftA3 = curry((fn, af1, af2, af3) => {
+  return af.map(fn).ap(af2).ap(af3);
+});
+
+const liftA4 = curry((fn, af1, af2, af3, af4) => {
+  return af.map(fn).ap(af2).ap(af3).ap(af4);
+});
+
+...
+```
+
+## 정리
+
+펑터와 모나드에 이어 애플리케이티브 펑터에 대해서 알아봤습니다. 애플리케이티브 펑터가 되기 위해서는 **ap** 메소드를 구현해야 합니다.
+
+ap 메소드는 **상자에 들어있는 값을 받아 자신이 들고있는 함수를 적용**시켜 반환합니다.
+
+애플리케이티브 펑터가 유용한 경우는 함수가 두 개 이상의 파라미터를 받는 경우 입니다.
+
+이 때 **ap 메소드를 이용해서 상자 안에 든 값을 꺼내지 않고도 바로 적용**할 수 있습니다.
+
+## 다음은?
+
+다음은 Traversable에 대해서 알아보도록 하겠습니다.
