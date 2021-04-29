@@ -1,0 +1,335 @@
+---
+title: '함수형 프로그래밍 in JS (1) - 코드 스타일'
+path: '/fp-in-js-1-code-style'
+date: '2019-11-14'
+coverImage: '../../images/fp.jpeg'
+author: 'nakta'
+excerpt: 'FP in JS 코드 스타일'
+tags: ['FP', '함수형 프로그래밍']
+---
+
+자바스크립트로 하는 함수형 프로그래밍에 대해서 글을 써볼까 합니다. 우연한 기회로 함수형 프로그래밍에 대한 관심을 갖게 됐고, 프론트엔드 개발을 하면서 적용했던 함수형 프로그래밍에 대해서 다뤄볼 예정입니다.
+
+첫 번째 글은 함수형 프로그래밍의 모양새를 살펴보도록 하겠습니다. 절차지향 프로그래밍이 보편적으로 많이 사용되기 때문에 대다수의 개발자들은 절차지향에 많이 익숙해져 있습니다. 처음부터 함수형 프로그래밍으로 들어가면 다소 거부감을 느낄 수 있을거라 생각합니다. ~~저 또한 처음 접할때는 많이 혼란스러웠던 부분들이 있었습니다.~~ 그래서 `가벼운 마음으로 어떻게 생겼는지 먼저 살펴보도록 하겠습니다.`
+
+## 함수형 프로그래밍은 어떻게 생겼을까?
+
+코드 예제를 살펴보겠습니다.
+
+함수형 프로그래밍 스터디를 시작하려고 합니다. 스터디 참여를 희망하는 사람들에게 이름을 제출해달라고 했습니다. 제출한 희망자 목록은 아래와 같습니다.
+
+```js
+const names = [
+  'leah kelly',
+  'christian_Nolan',
+  'Alexander james',
+  'Tim-Mackenzie',
+  'dan_Hunter',
+  'Ryan Bower',
+  'Frank_chapman',
+  'Dorothy-Sanderson',
+  'Fiona_Glover',
+  'Robert Edmunds',
+];
+```
+
+이름 형식에 통일성이 없어서 같은 형식으로 맞춰야 합니다. 아래 규칙에 따라 희망자 목록을 바꿔보겠습니다.
+
+- 성과 이름은 대문자로 시작한다. `// leah kelly => Leah Kelly`
+- 성과 이름 사이 구분은 공백으로 한다. `// christian_Nolan => christian Nolan`
+- 추가적으로 오름차순으로 정렬한다. `// ['c...', 'A...'] => ['A...', 'c...']`
+
+### 절차지향형 코드 스타일
+
+함수형 프로그래밍 스타일을 살펴보기에 앞서 모두가 익숙한 절차지향형 코드를 먼저 보겠습니다.
+
+```js
+const result = [];
+
+for (let i = 0; i < names.length; i += 1) {
+  const name = names[i];
+  const spaceName = name.replace(/(_|-)/, " ");
+  const splitName = spaceName.split(" ");
+
+  for (let j = 0; j < splitName.length; j += 1) {
+    let partName = splitName[j];
+    partName = partName.charAt(0).toUpperCase() + partName.slice(1);
+    splitName[j] = partName;
+  }
+
+  result.push(splitName.join(' '))
+}
+
+result.sort();
+```
+
+for 루프를 이용해서 이름 배열을 돌면서 처리하도록 합니다.
+
+```js
+for (let i = 0; i < names.length; i += 1) {
+	...
+}
+```
+
+성과 이름 사이를 공백으로 바꿔주기 위해 밑줄(\_)과 대시(-)를 공백으로 바꿔줍니다.
+
+```js
+const spaceName = name.replace(/(_|-)/, " ");
+```
+
+성과 이름의 첫 글자를 대문자로 바꿔주기 위해 성에 해당하는 파트와 이름에 해당하는 파트를 각 각 처리합니다.
+
+```js
+let partName = splitName[j];
+partName = partName.charAt(0).toUpperCase() + partName.slice(1);
+splitName[j] = partName;
+```
+
+오름차순 정렬을 위해 sort 메소드를 이용합니다.
+
+```js
+result.sort();
+```
+
+코드를 실행하면 우리가 원하는대로 목록을 바꿀 수 있습니다.
+
+```js
+[
+  "Alexander James",
+  "Christian Nolan",
+  "Dan Hunter",
+  "Dorothy Sanderson",
+  "Fiona Glover",
+  "Frank Chapman",
+  "Leah Kelly",
+  "Robert Edmunds",
+  "Ryan Bower",
+  "Tim Mackenzie"
+]
+```
+
+### 함수형 프로그래밍 코드 스타일
+
+이번엔 함수형 프로그래밍 코드 스타일을 살펴볼까요?
+
+```js
+const replaceSpace = (str) => {
+  return str.replace(/(_|-)/, ' ');
+}
+
+const startCase = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+const changePartStartCase = (str) => {
+  return str.split(' ').map(startCase).join(' ')
+}
+
+names
+.map(name => replaceSpace(name))
+.map(name => changePartStartCase(name))
+.sort()
+```
+
+Array.prototype.map 을 이용해서 이름을 순회합니다. 각 이름에 대해서 밑줄(\_) 또는 대시(-) 문자를 공백으로 바꿔줍니다.
+
+우리가 새롭게 만든 replaceSpace 라는 함수를 이용합니다.
+
+```js
+names
+.map(name => replaceSpace(name))
+```
+
+성과 이름을 공백으로 구분해준 결과에 Array.prototype.map을 바로 이용해 성과 이름이 대문자로 시작하도록 바꿔줍니다. changepartStartCase 라는 함수를 이용해서 바꿔줍니다.
+
+```js
+names
+.map(name => replaceSpace(name))
+.map(name => changePartStartCase(name))
+```
+
+잠시 changepartStartCase 함수를 살펴보도록 하겠습니다.
+
+문자열을 받아서 공백으로 조깹니다. 쪼갠 각 각의 문자열을 Array.prototype.map으로 순회하면서 첫 글자를 대문자로 바꿔줍니다. 마지막으로 다시 join을 이용해 하나의 문자열로 합쳐줍니다.
+
+```js
+const changePartStartCase = (str) => {
+  return str.split(' ').map(startCase).join(' ')
+}
+```
+
+그리고 마지막 줄 sort를 이용해 오름차순으로 정렬합니다.
+
+```js
+names
+.map(name => replaceSpace(name))
+.map(name => changePartStartCase(name))
+.sort()
+```
+
+## 스타일 비교
+
+절차지향형 스타일과 함수형 스타일을 잠시 살펴봤습니다. 어떤가요? 절차지향형 스타일과 함수형 스타일의 사이에 확연한 차이를 느끼셨을거라 생각합니다.
+
+### 첫 째, 변수의 사용
+
+절차지향 스타일은 변수를 이용합니다. **중간 값을 변수에 저장하고 변수를 변경하여 다시 저장**합니다. 이 변수를 이용해 최종적으로 원하는 값을 만들어 냅니다.
+
+```js
+const name = names[i];
+const spaceName = name.replace(/(_|-)/, " ");
+const splitName = spaceName.split(" ");
+```
+
+반면, 함수형 스타일은 어떤가요? **let, const 등의 변수 선언 문이 없습니다.** 물론 위 예제에서는 화살표 함수를 이용했기 때문에 const를 이용해서 함수를 선언하긴 했습니다. 만약 화살표 함수를 일반 함수 선언문으로 바꾼다면 const 형태로 할당하는 문장은 하나도 남지 않게 될 것입니다. 그렇다고 함수형 프로그래밍에서 절대로 변수를 쓰면 안된다 라는 생각은 위험할 수 있습니다. 때에 따라 변수를 적당히 섞어줘야 편할때도 많으니까요.
+
+```js
+names
+.map(name => replaceSpace(name))
+.map(name => changePartStartCase(name))
+.sort()
+```
+
+### 둘 째, 코드 표현
+
+말이 어려운데 둘 중 하나라고 생각하면 될것 같습니다. **어떻게(How)**를 표현하느냐, **무엇(What)**을 표현하느냐 입니다.
+
+**절차지향 스타일은 코드가 어떻게** 해야 하는지를 표현합니다. 이름에서 밑줄(\_)과 대시(-) 문자를 공백으로 바꾼다. 성과 이름을 대문자로 시작하도록 하기 위해서 공백으로 쪼개고 첫 글자만 대문자로 바꾸고... 등등. 최종 목표 값을 만들기 어떻게 해야 하는지를 코드로 표현합니다.
+
+반면, **함수형 스타일은 코드가 무엇**을 하는지 표현합니다. 각 이름에서 공백으로 바꿔야 한다(replaceSpace). 그리고 각 파트를 대문자로 시작하도록 해야 한다(changePartStartCase). 마지막으로 정렬해야 한다(sort).
+
+### 셋 째, 함수 기반
+
+절차지향 스타일 예제에서 함수를 하나도 사용하지 않았다고 해서 절차지향은 무조건 함수를 쓰지 않는다는 뜻은 아닙니다. 필요에 따라서 함수를 만들어서 사용할 수 있습니다. 하지만, 함수형 스타일에 비해서 함수에 의존도가 낮다는 뜻입니다.
+
+함수형 스타일에서는 기본적으로 함수를 기반으로 코드가 동작합니다. 함수를 만들고 함수를 조합하는 방식으로 코드를 만들어 갑니다.
+
+```js
+const replaceSpace = (str) => {
+  return str.replace(/(_|-)/, ' ');
+}
+
+const startCase = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+const changePartStartCase = (str) => {
+  return str.split(' ').map(startCase).join(' ')
+}
+```
+
+위 예제에서도 절차지향의 코드에서 중요 로직을 함수로 분리하고 함수를 조합하는 방식으로 최종 결과를 만들어 냈습니다.
+
+## 함수형 스타일 한 스텝 더!
+
+위 함수형 예제에서 주요 로직을 함수로 분리하는 작업을 거쳐서 함수를 조합했습니다. 그 중에서도 startCase 라는 함수처럼 간단하지만 직접 구현하려면 귀찮은 함수들이 많이 필요하게 됩니다. 이 처럼 간단하고 자주 쓰이는 함수를 제공하는 라이브러리가 있습니다. 대표적으로 많이 사용하는 [lodash](https://lodash.com/)와, 함수형 프로그래밍에 최적화 된 [ramdajs](https://ramdajs.com/)를 소개하도록 하겠습니다.
+
+두 가지 모두 간단하면서도 유용한 함수들을 제공합니다. 대표적인 예로 위 예제에서 사용했던 replace, startCase, join, split 등등 많은 기능을 제공합니다.
+
+이 두가지 라이브러리를 이용해서 위 예제를 구현한 코드를 살펴보겠습니다.
+
+### lodash 메소드 체이닝
+
+```js
+import _ from 'lodash';
+
+_.chain(names)
+ .map(name => name.replace(/()_|-/, " "))
+ .map(_.startCase)
+ .sort()
+ .value();
+```
+
+메소드 체이닝은 \_.chain을 이용해서 메소드 체인을 시작합니다. 이후 점(.)을 이용해 지속적으로 체이닝을 이어 나가며 데이터를 처리해 나갑니다. 마지막에 value를 호출해서 최종적으로 값을 추출해 냅니다.
+
+\_.chain에 names로 호출을 하면 결과 값으로 LodashWrapper 라는 객체가 반환됩니다. 이 LodashWrapper를 이용해서 체이닝을 이어 나가게 됩니다.
+
+### ramdajs 메소드 파이프라인
+
+```js
+import { replace, toUpper, map, pipe, sortBy, identity } from 'ramda';
+
+const startCase = (str) => {
+  return replace(/(\b\w(?!\s))/g, toUpper, str);
+}
+
+pipe(
+  map(replace(/(_|-)/, ' ')),
+  map(startCase),
+  sortBy(identity)
+)(names);
+```
+
+메소드 파이프라인은 pipe 라는 함수에 처리할 로직 함수들을 먼저 전달하고 마지막으로 names를 전달해서 처리합니다. 파이프라인도 마찬가지로 위에서부터 아래로 처리 결과를 흘려보내주면서 최종적으로 결과를 반환합니다.
+
+**ramdajs에서는 startCase 함수를 제공하지 않아 직접 구현해서 사용했습니다.**
+
+### 메소드 체이닝과 메소드 파이프라인의 차이는 뭘까?
+
+메소드 체인은 점(.)을 이용해서 LodashWrapper에서 제공하는 메소드를 이용해 데이터를 처리해 나갑니다. 반면, 메소드 파이프라인은 pipe 라는 함수에 원하는 함수를 차례대로 인자로 넘겨서 데이터를 처리해 나갑니다.
+여기서 차이를 느끼셨나요? 메소드 체이닝은 LodashWrapper 객체를 이용하기 때문에 여기서 제공하는 메소드만을 사용할 수 있습니다. 즉, **단단한 결합**으로 돼있다고 볼 수 있을것 같습니다.
+다음으로 메소드 파이프라인은 원하는 함수를 만들어서 중간에 끼워 넣을 수 있습니다. 즉, **느슨한 결합**으로 돼있다고 보면 될 것 같습니다.
+한 마디로 제한된 표현성과 유연함의 차이라고 생각하시면 됩니다.
+
+아직 잘 와닿지 않는 분들을 위해 예제를 하나 들겠습니다.
+
+```js
+const person = {
+  name: 'Nakta',
+  age: 31,
+  work: 'programmer'
+};
+```
+
+- age 필드를 지운다.
+- work 필드 명을 job 으로 바꾼다.
+
+**메소드 체이닝**
+
+```js
+const rename = (keysMap, obj) => {
+  ... // 구현부 생략
+}
+
+const omittedAge = _.chain(person)
+ .omit(['age'])
+ .value()
+
+const result = rename({work: 'job'}, omittedAge)
+```
+
+메소드 체이닝 만으로는 불가능합니다. 필드 명을 바꿔주는 메소드는 LodashWrapper에서 제공하지 않기 때문입니다. 메소드 체이닝이 끝난 결과값에서 필드명을 바꿔주는 작업을 다시 한번 해줘야 합니다.
+
+**메소드 파이프라인**
+
+```js
+const rename = (keysMap, obj) => {
+  ... // 구현부 생략
+}
+
+pipe(
+  omit(['age']),
+  rename({work: 'job'})
+)(person)
+```
+
+메소드 파이프라인은 함수를 파라미터로 넘기기 때문에 제약 없이 함수를 끼워 넣을 수 있습니다.
+이런 특성 때문에 파이프라인이 체이닝 보다 더 유연하다고 할 수 있는것입니다.
+
+## 종합
+
+절차지향 스타일과 함수형 스타일을 살펴봤습니다. 두 스타일의 차이를 세가지로 생각해 봤습니다.
+
+1. 변수 사용 유무.
+2. 코드 표현 방식. 어떻게와 무엇.
+3. 함수 기반 구현.
+
+함수형 코드 스타일 중 메소드 체이닝과 메소드 파이프라인을 살펴봤습니다.
+
+- 단단한 결합 <-> 느슨한 결합. 즉, 유연성의 차이.
+
+## 다음은?
+
+다음 글은 **함수 컴포지션**과 **커링**에 대해서 써보도록 하겠습니다.
+
+**[다음 글: 함수 컴포지션, 커링](/fp-in-js-2-composition-currying)**
