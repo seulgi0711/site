@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import React from 'react';
-import { GitHub, Velog } from '../SocialIcons';
+import { Email, GitHub, Velog } from '../SocialIcons';
 
 function Socials() {
   return (
@@ -8,6 +8,7 @@ function Socials() {
       {/* <Twitter /> */}
       <GitHub />
       <Velog />
+      <Email />
       {/* <Medium /> */}
       {/* <Patreon /> */}
     </SocialsWrapper>
@@ -19,7 +20,7 @@ const SocialsWrapper = styled.div`
   align-items: center;
   justify-content: space-around;
   margin-left: 10px;
-  width: 90px;
+  width: 120px;
 `;
 
 export default Socials;
