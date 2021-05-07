@@ -7137,7 +7137,7 @@ gatsby-telemetry@^1.4.1:
     node-fetch "^2.6.1"
     uuid "3.4.0"
 
-gatsby-theme-waves@^0.1.5:
+gatsby-theme-waves@0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/gatsby-theme-waves/-/gatsby-theme-waves-0.1.6.tgz#8d695bb2d2d334b0eee45b25f84e9253f075443b"
   integrity sha512-AQr66FEfCIn3L4ujxUJMSbZxEuZ/zGO2G4j7utNRcCKqSp5UGWHVuPpZ+YgPZCHedHiziR/B3rYyD7V3aoKIMA==
