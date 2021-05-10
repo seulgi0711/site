@@ -41,7 +41,7 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
     <>
       <GlobalStyles />
       <ThemeProvider theme={theme}>
-        <SEO title={title} description={excerpt || autoExcerpt} />
+        <SEO title={title} description={excerpt || autoExcerpt} keywords={tags} />
         <div>
           <DarkSpace>
             <TopContent>
