@@ -1,7 +1,5 @@
-import React from 'react';
-
 type Props = {
-  copyrights: string,
+  copyrights: string;
 };
 
 const Footer = ({ copyrights }: Props) => (

@@ -1,15 +1,14 @@
 import { graphql, Link, useStaticQuery } from 'gatsby';
 import Img from 'gatsby-image';
-import React from 'react';
 import styled from '../styled';
 import Socials from './Socials';
 
 type Props = {
-  appendDescription?: React.ReactNode,
+  appendDescription?: React.ReactNode;
 };
 
 function About({ appendDescription }: Props) {
-  const data = useStaticQuery(graphql`
+  const data = useStaticQuery<GatsbyTypes.AboutQueryQuery>(graphql`
     query AboutQuery {
       file(relativePath: { eq: "profile.png" }) {
         childImageSharp {

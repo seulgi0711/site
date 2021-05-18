@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import { IconPath, IconWrapper, Label } from './elements';
 
-const Icon = props => {
+const Icon = (props) => {
   const { d, size = '1em', label, style: styles } = props;
 
   return (

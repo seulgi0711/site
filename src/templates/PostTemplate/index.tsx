@@ -3,27 +3,26 @@ import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 // import { MDXRenderer } from 'gatsby-plugin-mdx';
-import React from 'react';
 import Socials from '../../components/About/Socials';
 import Comment from '../../components/Comment/Comment';
 // import { DarkSpace } from '../../components/elements';
 import GlobalStyles from '../../components/GlobalStyles';
 // import Layout2 from '../../components/Layout2';
 import Navigation2 from '../../components/Navigation2';
-import SEO from '../../components/seo';
+import SEO from '../../components/SEO2';
 import styled, { theme } from '../../components/styled';
 import TagList from '../../components/TagList/TagList';
 import { Title } from './elements';
 
 type Props = {
-  data: any,
+  data: any;
   pageContext: {
-    next: any,
-    previous: any,
-  },
+    next: any;
+    previous: any;
+  };
 };
 
-const BlogPostTemplate = ({ data, pageContext }: Props) => {
+const PostTemplate = ({ data, pageContext }: Props) => {
   const {
     frontmatter: { title, date, path, author, coverImage, excerpt, tags },
     excerpt: autoExcerpt,
@@ -41,7 +40,11 @@ const BlogPostTemplate = ({ data, pageContext }: Props) => {
     <>
       <GlobalStyles />
       <ThemeProvider theme={theme}>
-        <SEO title={title} description={excerpt || autoExcerpt} keywords={tags} />
+        <SEO
+          postTitle={title}
+          description={excerpt || autoExcerpt}
+          keywords={tags}
+        />
         <div>
           <DarkSpace>
             <TopContent>
@@ -112,7 +115,7 @@ const Content = styled.div`
   color: ${({ theme }) => theme.lightColor};
 
   .anchor {
-    margin-right: .5em;
+    margin-right: 0.5em;
   }
 
   @media (max-width: 684px) {
@@ -150,7 +153,7 @@ const CommentWrapper = styled.div`
   margin-top: 120px;
 `;
 
-export default BlogPostTemplate;
+export default PostTemplate;
 
 export const pageQuery = graphql`
   query($path: String) {

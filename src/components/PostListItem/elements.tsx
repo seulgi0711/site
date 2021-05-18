@@ -58,3 +58,14 @@ export const ReadMore = styled(Link)`
   margin: 20px 0;
   font-size: 1rem;
 `;
+
+export const Date = styled.div`
+  font-size: 14px;
+`;
+export const UpperSide = styled.div`
+  position: absolute;
+  bottom: calc(100% + 80px);
+  width: 100%;
+  z-index: 1;
+  color: ${({ theme }) => theme.darkColor};
+`;

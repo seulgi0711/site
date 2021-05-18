@@ -1,5 +1,4 @@
 import { css, Global } from '@emotion/core';
-import React from 'react';
 import Fonts from './Fonts';
 import OverridePrism from './OverridePrism';
 import { theme } from './styled';

@@ -93,5 +93,6 @@ module.exports = {
         trackingIds: ['G-KDQP6C6RCH'],
       },
     },
+    `gatsby-plugin-typegen`,
   ],
 };

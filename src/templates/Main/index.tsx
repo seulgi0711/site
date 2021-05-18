@@ -1,24 +1,21 @@
+import GlobalStyles from '@/components/GlobalStyles';
+import PostList from '@/components/PostList';
+import SEO from '@/components/SEO2';
+import { theme } from '@/components/styled';
 import { ThemeProvider } from 'emotion-theming';
 import { graphql } from 'gatsby';
-import React from 'react';
-import GlobalStyles from '../components/GlobalStyles';
-import Posts from '../components/Posts';
-import SEO from '../components/seo';
-import styled, { theme } from '../components/styled';
+import { DarkSpace, Wrapper } from './elements';
 
 type Props = {
-  data: any;
+  data: GatsbyTypes.PostsQuery;
   pageContext: {
     nextPagePath: string;
     previousPagePath: string;
   };
 };
 
-const Index = ({ data, pageContext }: Props) => {
+const Main = ({ data, pageContext }: Props) => {
   const { nextPagePath, previousPagePath } = pageContext;
-  const {
-    allMdx: { edges: posts },
-  } = data;
 
   return (
     <>
@@ -27,7 +24,7 @@ const Index = ({ data, pageContext }: Props) => {
       <ThemeProvider theme={theme}>
         <Wrapper>
           <DarkSpace />
-          <Posts posts={posts} />
+          <PostList postEdges={data.allMdx.edges} />
         </Wrapper>
       </ThemeProvider>
     </>
@@ -35,7 +32,7 @@ const Index = ({ data, pageContext }: Props) => {
 };
 
 export const postsQuery = graphql`
-  query($limit: Int!, $skip: Int!) {
+  query Posts($limit: Int!, $skip: Int!) {
     allMdx(
       filter: { fileAbsolutePath: { regex: "//posts//" } }
       sort: { fields: [frontmatter___date], order: DESC }
@@ -70,20 +67,4 @@ export const postsQuery = graphql`
   }
 `;
 
-const Wrapper = styled.div`
-  height: 100vh;
-  width: 100vw;
-`;
-
-const DarkSpace = styled.div`
-  background: ${({ theme }) => theme.darkBackground};
-  height: 50%;
-  flex: none;
-  position: fixed;
-  height: 50vh;
-  left: 0;
-  right: 0;
-  z-index: 1;
-`;
-
-export default Index;
+export default Main;

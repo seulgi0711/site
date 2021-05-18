@@ -1,45 +1,35 @@
+import { isNil } from 'ramda';
 import React, { useEffect, useRef } from 'react';
 import About from '../About';
-import PostPreview from '../PostPreview';
+import PostPreview from '../PostListItem';
 import styled from '../styled';
 
 type Props = {
-  posts: any[],
+  postEdges: GatsbyTypes.PostEdges;
 };
 
-const renderPost = ({ node }) => {
-  const {
-    id,
-    excerpt: autoExcerpt,
-    frontmatter: { title, date, path, author, coverImage, excerpt, tags },
-  } = node;
+export type PostEdge = GatsbyTypes.PostEdge;
 
-  return (
-    <PostPreview
-      key={id}
-      title={title}
-      date={date}
-      path={path}
-      author={author}
-      coverImage={coverImage}
-      tags={tags}
-      excerpt={excerpt || autoExcerpt}
-    />
-  );
+const renderPost = ({ node }: PostEdge) => {
+  return <PostPreview postNode={node} key={node.id} />;
 };
 
-function Posts({ posts }: Props) {
-  const ref = useRef(null);
+function Posts({ postEdges: posts }: Props) {
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const node = ref.current;
 
-    const handleWheel = event => {
+    if (node === null) return;
+
+    const handleWheel = (event: WheelEvent) => {
       if (event.deltaY !== 0) {
         event.preventDefault();
       }
 
       requestAnimationFrame(() => {
+        if (isNil(node)) return;
+
         node.scrollLeft += event.deltaY;
         node.scrollTop = 0;
       });

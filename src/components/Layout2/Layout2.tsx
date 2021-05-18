@@ -1,11 +1,10 @@
 import { graphql, useStaticQuery } from 'gatsby';
-import React from 'react';
 import Footer from '../footer';
 import styled from '../styled';
 import { Container, Content } from './elements';
 
 const Layout = ({ children }) => {
-  const data = useStaticQuery(query);
+  const data = useStaticQuery<GatsbyTypes.SiteTitleQueryQuery>(query);
   const {
     title,
     logo,
