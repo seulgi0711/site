@@ -172,7 +172,7 @@ printAxelBookTitle('book2'); // speaking javaScript
 
 ### getOrElse
 
-이전에 Maybe를 소개할 때에도 maybe.\$value와 같은 형태를 썼었는데요. Nothing을때 기본값을 반환하기 위해 사용했던 함수가 있습니다. `getOrElse` 함수입니다.
+이전에 Maybe를 소개할 때에도 maybe.$value와 같은 형태를 썼었는데요. Nothing을때 기본값을 반환하기 위해 사용했던 함수가 있습니다. `getOrElse` 함수입니다.
 
 ```js
 const getOrElse = curry((defaultValue, fn, maybe) => {
@@ -241,7 +241,7 @@ getOrElse(0, Maybe.of(null)); // 0
 const printAxelBookTitle = pipe(
   getBookById(books),
   map(validateAuthor),
-  getOrElse(''),
+  getOrElse(Maybe.of(null)),
   map(logProp('title'))
 );
 
@@ -259,7 +259,7 @@ const addOneToMaybe = (value) => {
 
 pipe(
   map(addOneToMaybe),
-  getOrElse(0)
+  getOrElse(Maybe.of(0))
 )(Maybe.of(1)); // Just(2)
 ```
 
