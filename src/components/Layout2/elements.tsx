@@ -5,8 +5,8 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  background: ${({ theme }) => theme.lightBackground};
-  color: ${({ theme }) => theme.lightColor};
+  background: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.color};
 `;
 
 export const Content = styled.div`
@@ -34,8 +34,8 @@ export const InfoBanner = styled.div`
   padding: 10px 20px;
   border-radius: 10px;
   width: calc(100% - 40px);
-  background: ${({ theme }) => theme.darkBackgroundSecondary};
-  color: ${({ theme }) => theme.darkColor};
+  background: ${({ theme }) => theme.backgroundSecondary};
+  color: ${({ theme }) => theme.color};
 
   span {
     font-weight: bold;

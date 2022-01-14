@@ -4,13 +4,13 @@ import { startCase, toKebabCase } from '../../helpers';
 import styled from '../styled';
 
 type Props = {
-  tags: string[],
+  tags: string[];
 };
 
 function TagList({ tags = [] }: Props) {
   return tags.length === 0 ? null : (
     <TagListWrapper>
-      {tags.map(tag => (
+      {tags.map((tag) => (
         <Link to={`/tag/${toKebabCase(tag)}/`} key={toKebabCase(tag)}>
           <Tag>#{startCase(tag)}</Tag>
         </Link>

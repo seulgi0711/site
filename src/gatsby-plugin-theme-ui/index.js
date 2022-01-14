@@ -95,8 +95,8 @@ export default merge.all([
 //   typographyTheme,
 //   {
 //     colors: {
-//       text: theme.darkColor,
-//       background: theme.darkBackground,
+//       text: theme.color,
+//       background: theme.background,
 //     },
 //     fonts: {
 //       body:

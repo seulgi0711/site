@@ -5,7 +5,7 @@ import styled from '../styled';
 import { Container, Content } from './elements';
 
 const Layout = ({ children }) => {
-  const data = useStaticQuery(query);
+  const data = useStaticQuery<GatsbyTypes.SiteTitleQueryQuery>(query);
   const {
     title,
     logo,
@@ -53,7 +53,7 @@ const query = graphql`
 `;
 
 const DarkSpace = styled.div`
-  background: ${({ theme }) => theme.darkBackground};
+  background: ${({ theme }) => theme.background};
   height: 50%;
   flex: none;
 `;
