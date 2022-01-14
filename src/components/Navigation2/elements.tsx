@@ -14,7 +14,7 @@ export const Button = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.lightBackgroundSecondary};
+  background: ${({ theme }) => theme.secondary};
   font-size: 1rem;
   font-weight: bold;
   border-radius: 8px;

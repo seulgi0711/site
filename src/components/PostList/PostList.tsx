@@ -1,6 +1,3 @@
-import { isNil } from 'ramda';
-import React, { useEffect, useRef } from 'react';
-import About from '../About';
 import PostPreview from '../PostListItem';
 import styled from '../styled';
 
@@ -10,63 +7,45 @@ type Props = {
 
 export type PostEdge = GatsbyTypes.PostEdge;
 
-const renderPost = ({ node }: PostEdge) => {
-  return <PostPreview postNode={node} key={node.id} />;
-};
-
 function Posts({ postEdges: posts }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const node = ref.current;
-
-    if (node === null) return;
-
-    const handleWheel = (event: WheelEvent) => {
-      if (event.deltaY !== 0) {
-        event.preventDefault();
-      }
-
-      requestAnimationFrame(() => {
-        if (isNil(node)) return;
-
-        node.scrollLeft += event.deltaY;
-        node.scrollTop = 0;
-      });
-    };
-
-    node.addEventListener('wheel', handleWheel);
-    return () => {
-      node.removeEventListener('wheel', handleWheel);
-    };
-  }, []);
-
   return (
-    <PostsWrapper ref={ref}>
-      {/* <DarkSpace />
-      <ScrollWrapper>
-        <Bottom>
-        </Bottom>
-      </ScrollWrapper> */}
-      <About />
-      {posts.map(renderPost)}
+    <PostsWrapper>
+      <VerticalBar />
+      {posts.map(({ node }, index) => {
+        return (
+          <PostPreview
+            postNode={node}
+            key={node.id}
+            side={index % 2 === 0 ? 'left' : 'right'}
+          />
+        );
+      })}
     </PostsWrapper>
   );
 }
 
 const PostsWrapper = styled.div`
-  padding-top: 50vh;
   height: 100%;
   position: relative;
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  background: ${({ theme }) => theme.lightBackground};
-  color: ${({ theme }) => theme.lightColor};
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 80px 0;
+`;
 
-  /* & > *&:not(:first-of-type) {
-    margin-left: 40px;
-  } */
+const VerticalBar = styled.div`
+  width: 32px;
+  background-color: ${({ theme }) => theme.secondary};
+  position: absolute;
+  top: 160px;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 30px;
+  opacity: 0.5;
+
+  @media (max-width: 875px) {
+    display: none;
+  }
 `;
 
 export default Posts;

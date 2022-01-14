@@ -1,4 +1,5 @@
 import { Link } from 'gatsby';
+import React from 'react';
 import { startCase, toKebabCase } from '../../helpers';
 import styled from '../styled';
 
@@ -19,7 +20,6 @@ function TagList({ tags = [] }: Props) {
 }
 
 export const TagListWrapper = styled.div`
-  margin-top: 10px;
   opacity: 0.5;
 `;
 

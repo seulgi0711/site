@@ -1,4 +1,5 @@
 import { css, Global } from '@emotion/core';
+import React from 'react';
 import Fonts from './Fonts';
 import OverridePrism from './OverridePrism';
 import { theme } from './styled';
@@ -41,8 +42,9 @@ export default function GlobalStyles() {
               font-size: 1rem;
             }
 
-            background-color: ${theme.lightBackground} !important;
-            color: ${theme.lightColor} !important;
+            background-color: ${theme.background} !important;
+            color: ${theme.color} !important;
+            min-width: 500px;
           }
 
           h1,
@@ -153,7 +155,7 @@ export default function GlobalStyles() {
             font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
             font-feature-settings: normal;
             font-weight: normal;
-            background: ${theme.lightBackgroundSecondary};
+            background: ${theme.backgroundSecondary};
             padding: 1px 6px;
             margin: 0 2px;
             border-radius: 5px;
@@ -211,12 +213,12 @@ export default function GlobalStyles() {
           table,
           th,
           td {
-            border: 1px solid ${theme.lightColor};
+            border: 1px solid ${theme.color};
             padding: 10px;
           }
 
           th {
-            background: ${theme.lightBackgroundSecondary};
+            background: ${theme.backgroundSecondary};
           }
 
           ul,
@@ -243,7 +245,6 @@ export default function GlobalStyles() {
           hr {
             width: 100%;
             border: none;
-            background: ${theme.lightBorderColor};
             height: 1px;
           }
 

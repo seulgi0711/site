@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default ({ children }) => (
   <div>
     <h1>My Layout</h1>

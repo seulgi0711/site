@@ -5,7 +5,7 @@ export const Wrapper = styled.div`
   width: 100vw;
 `;
 export const DarkSpace = styled.div`
-  background: ${({ theme }) => theme.darkBackground};
+  background: ${({ theme }) => theme.background};
   height: 50%;
   flex: none;
   position: fixed;
@@ -20,8 +20,8 @@ export const PostsWrapper = styled.div`
   position: relative;
   display: flex;
   overflow-x: auto;
-  background: ${({ theme }) => theme.lightBackground};
-  color: ${({ theme }) => theme.lightColor};
+  background: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.color};
 
   /* & > *&:not(:first-of-type) {
     margin-left: 40px;

@@ -1,4 +1,5 @@
 import { css, Global } from '@emotion/core';
+import React from 'react';
 
 function Fonts() {
   return (

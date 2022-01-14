@@ -1,5 +1,6 @@
 import Img from 'gatsby-image';
 import { isNil } from 'ramda';
+import React from 'react';
 import styled from '../styled';
 
 type Props = {
@@ -17,9 +18,8 @@ const PostListItemCoverImage = ({ postNode }: Props) => {
 };
 
 const StyledImage = styled(Img)`
-  margin-top: 1em;
   width: 100% !important;
-  height: 214px !important;
+  height: 150px !important;
 `;
 
 export default PostListItemCoverImage;

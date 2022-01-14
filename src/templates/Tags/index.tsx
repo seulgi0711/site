@@ -1,6 +1,7 @@
 import { ThemeProvider } from 'emotion-theming';
 import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
+import React from 'react';
 import About from '../../components/About';
 import GlobalStyles from '../../components/GlobalStyles';
 import { InfoBanner } from '../../components/Layout2/elements';

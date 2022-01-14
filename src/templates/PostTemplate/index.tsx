@@ -1,7 +1,9 @@
+import ProfileImage from '@/components/ProfileImage';
 import { ThemeProvider } from 'emotion-theming';
-import { graphql } from 'gatsby';
+import { graphql, Link } from 'gatsby';
 import Img from 'gatsby-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
+import React from 'react';
 // import { MDXRenderer } from 'gatsby-plugin-mdx';
 import Socials from '../../components/About/Socials';
 import Comment from '../../components/Comment/Comment';
@@ -46,20 +48,27 @@ const PostTemplate = ({ data, pageContext }: Props) => {
           keywords={tags}
         />
         <div>
-          <DarkSpace>
-            <TopContent>
+          <TopContent>
+            <Content>
               <BlogTitle>
-                <BlogLink href="/">
-                  <h1>Nakta's Dev Story</h1>
-                </BlogLink>
-                <div>Front-End Developer</div>
+                <div>
+                  <BlogLink>
+                    <Link to="/">Nakta's Blog</Link>
+                  </BlogLink>
+                  <Desc>Frontend Dev Story</Desc>
+                </div>
+                <Link to="/">
+                  <ProfileImage />
+                </Link>
               </BlogTitle>
-              <Title>{title}</Title>
-              <div>{date}</div>
-              <TagList tags={tags} />
-            </TopContent>
-          </DarkSpace>
+            </Content>
+          </TopContent>
+          <Divider />
           <Content>
+            <Title>{title}</Title>
+            <div>{date}</div>
+            <TagList tags={tags} />
+
             {coverImage && (
               <CoverImage fluid={coverImage.childImageSharp.fluid} />
             )}
@@ -90,21 +99,20 @@ const PostTemplate = ({ data, pageContext }: Props) => {
 
 const BlogTitle = styled.div`
   margin-bottom: 120px;
-`;
-
-const BlogLink = styled.a`
-  text-decoration: none;
-  border-bottom: 1px solid;
-`;
-
-const DarkSpace = styled.div`
-  background: ${({ theme }) => theme.darkBackground};
-  color: ${({ theme }) => theme.darkColor};
-  min-height: 400px;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 350px;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const BlogLink = styled.h1`
+  margin: 0;
+  margin-top: 16px;
+  color: #f8fcfd;
+
+  &,
+  a {
+    text-decoration: none;
+  }
 `;
 
 const Content = styled.div`
@@ -112,7 +120,7 @@ const Content = styled.div`
   margin: 0 auto;
   width: 100%;
   padding: 20px;
-  color: ${({ theme }) => theme.lightColor};
+  color: ${({ theme }) => theme.color};
 
   .anchor {
     margin-right: 0.5em;
@@ -133,8 +141,13 @@ const CoverImage = styled(Img)`
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 `;
 
-const TopContent = styled(Content)`
-  color: ${({ theme }) => theme.darkColor};
+const TopContent = styled.div`
+  background: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.color};
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
 `;
 
 const ExploreMore = styled.div`
@@ -146,11 +159,23 @@ const ExploreMore = styled.div`
 
 const SocialWrapper = styled.div`
   margin-top: 20px;
-  color: ${({ theme }) => theme.darkColor};
+  color: ${({ theme }) => theme.color};
 `;
 
 const CommentWrapper = styled.div`
   margin-top: 120px;
+`;
+
+const Desc = styled.div`
+  color: #a2865e;
+  font-size: 21px;
+  font-weight: bold;
+`;
+
+const Divider = styled.div`
+  height: 2px;
+  background-color: ${({ theme }) => theme.color};
+  opacity: 0.5;
 `;
 
 export default PostTemplate;

@@ -1,5 +1,6 @@
 import { useSiteMetadata } from '@/hooks/useSiteMetadata';
 import { join, merge, pipe } from 'ramda';
+import React from 'react';
 import Helmet from 'react-helmet';
 import { rejectEmpty } from '../../utils/fnUtil';
 

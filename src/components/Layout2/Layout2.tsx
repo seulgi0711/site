@@ -1,4 +1,5 @@
 import { graphql, useStaticQuery } from 'gatsby';
+import React from 'react';
 import Footer from '../footer';
 import styled from '../styled';
 import { Container, Content } from './elements';
@@ -52,7 +53,7 @@ const query = graphql`
 `;
 
 const DarkSpace = styled.div`
-  background: ${({ theme }) => theme.darkBackground};
+  background: ${({ theme }) => theme.background};
   height: 50%;
   flex: none;
 `;

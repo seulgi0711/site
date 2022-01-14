@@ -1,30 +1,13 @@
 import { Link } from 'gatsby';
 import styled from '../styled';
 
-export const PostWrapper = styled.div`
-  min-width: 320px;
-  max-width: 800px;
-  text-align: left;
+export const PostWrapper = styled.div<{ side: 'left' | 'right' }>`
   padding: 20px;
-  position: relative;
-  flex: none;
-  /* margin: 0 auto 20px; */
+  display: flex;
+  align-items: center;
 
-  /* &:not(:last-of-type) {
-    border-bottom: 1px solid ${({ theme }) => theme.lightBorderColor};
-    border-color: ${({ theme }) => theme.darkBorderColor};
-  } */
-
-  @media (max-width: 900px) {
-    max-width: 660px;
-  }
-
-  h1 {
-    margin: 0 0 10px;
-  }
-
-  img {
-    border-radius: 8px;
+  @media (min-width: 875px) {
+    flex-direction: ${({ side }) => (side === 'left' ? 'row-reverse' : 'row')};
   }
 `;
 
@@ -32,7 +15,8 @@ export const PostContent = styled.div`
   position: relative;
 `;
 
-export const Title = styled.h2`
+export const Title = styled.h4`
+  display: inline-block;
   a {
     text-decoration: none;
   }
@@ -61,11 +45,12 @@ export const ReadMore = styled(Link)`
 
 export const Date = styled.div`
   font-size: 14px;
+  opacity: 0.8;
 `;
 export const UpperSide = styled.div`
   position: absolute;
   bottom: calc(100% + 80px);
   width: 100%;
   z-index: 1;
-  color: ${({ theme }) => theme.darkColor};
+  color: ${({ theme }) => theme.color};
 `;

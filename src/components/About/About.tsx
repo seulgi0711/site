@@ -1,5 +1,6 @@
 import { graphql, Link, useStaticQuery } from 'gatsby';
 import Img from 'gatsby-image';
+import React from 'react';
 import styled from '../styled';
 import Socials from './Socials';
 
@@ -59,7 +60,7 @@ const Title = styled.h1`
 
 const ProfileImage = styled(Img)`
   border-radius: 100%;
-  background: ${({ theme }) => theme.darkBackgroundSecondary};
+  background: ${({ theme }) => theme.backgroundSecondary};
 `;
 
 const UpperSide = styled.div`

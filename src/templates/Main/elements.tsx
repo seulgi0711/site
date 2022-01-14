@@ -5,7 +5,7 @@ export const Wrapper = styled.div`
   width: 100vw;
 `;
 export const DarkSpace = styled.div`
-  background: ${({ theme }) => theme.darkBackground};
+  background: ${({ theme }) => theme.background};
   height: 50%;
   flex: none;
   position: fixed;
