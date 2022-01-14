@@ -13,7 +13,6 @@ type Props = {
 
 const PostListItem = ({ postNode, side }: Props) => {
   const {
-    excerpt: autoExcerpt,
     frontmatter: { title, date, path, excerpt, tags = [] },
   } = postNode;
 
