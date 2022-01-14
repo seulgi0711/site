@@ -37,10 +37,6 @@ const Main = ({ data, pageContext }: Props) => {
         <Body>
           <PostList postEdges={data.allMdx.edges} />
         </Body>
-        {/* <Wrapper>
-          <DarkSpace />
-          <PostList postEdges={data.allMdx.edges} />
-        </Wrapper> */}
       </ThemeProvider>
     </>
   );

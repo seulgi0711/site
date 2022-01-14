@@ -1,6 +1,5 @@
 import { ThemeProvider } from 'emotion-theming';
 import { graphql } from 'gatsby';
-import PropTypes from 'prop-types';
 import React from 'react';
 import About from '../../components/About';
 import GlobalStyles from '../../components/GlobalStyles';
@@ -10,31 +9,18 @@ import SEO from '../../components/SEO2';
 import { theme } from '../../components/styled';
 import { DarkSpace, PostsWrapper, TagInfoWrapper, Wrapper } from './elements';
 
-const renderPost = ({ node }) => {
-  const {
-    id,
-    excerpt: autoExcerpt,
-    frontmatter: { title, date, path, author, coverImage, excerpt, tags },
-  } = node;
-
-  return (
-    <PostPreview
-      key={id}
-      title={title}
-      date={date}
-      path={path}
-      author={author}
-      coverImage={coverImage}
-      tags={tags}
-      excerpt={excerpt || autoExcerpt}
-    />
-  );
-};
+interface TagsProps {
+  data: GatsbyTypes.TagsQuery;
+  pageContext: {
+    nextPagePath: string;
+    previousPagePath: string;
+  };
+}
 
 const Tags = ({
   data,
   pageContext: { nextPagePath, previousPagePath, tag },
-}) => {
+}: TagsProps) => {
   const {
     allMdx: { edges: posts },
   } = data;
@@ -54,7 +40,25 @@ const Tags = ({
           <DarkSpace />
           <PostsWrapper>
             <About appendDescription={tagInfo} />
-            {posts.map(renderPost)}
+            {data.allMdx.edges.map(({ node }) => {
+              const {
+                id,
+                excerpt: autoExcerpt,
+                frontmatter: {
+                  title,
+                  date,
+                  path,
+                  author,
+                  coverImage,
+                  excerpt,
+                  tags,
+                },
+              } = node;
+
+              return (
+                <PostPreview postNode={node} key={node.id} side={'left'} />
+              );
+            })}
           </PostsWrapper>
         </Wrapper>
         {/* <Layout>
@@ -103,16 +107,8 @@ const Tags = ({
   );
 };
 
-Tags.propTypes = {
-  data: PropTypes.object.isRequired,
-  pageContext: PropTypes.shape({
-    nextPagePath: PropTypes.string,
-    previousPagePath: PropTypes.string,
-  }),
-};
-
 export const postsQuery = graphql`
-  query($limit: Int!, $skip: Int!, $tag: String!) {
+  query TagsQuery($limit: Int!, $skip: Int!, $tag: String!) {
     allMdx(
       filter: { frontmatter: { tags: { in: [$tag] } } }
       sort: { fields: [frontmatter___date], order: DESC }
