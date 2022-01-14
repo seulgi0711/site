@@ -23,11 +23,16 @@ const MenuBar = () => {
 
 const MenuBarWrapper = styled.div`
   height: 56px;
-  background-color: #f8fcfd;
+  background-color: rgb(248 252 253 / 70%);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 32px;
+
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  backdrop-filter: saturate(180%) blur(20px);
 `;
 
 export default MenuBar;
