@@ -1,11 +1,11 @@
 ---
-title: "Gatsby에 디스커스(DISQUS) 넣기"
-path: "/disqus-in-gatsby"
-date: "2021-04-05"
-coverImage: "../../images/disqus.png"
-author: "nakta"
+title: 'Gatsby에 디스커스(DISQUS) 넣기'
+path: '/disqus-in-gatsby'
+date: '2021-04-05'
+coverImage: '../../images/disqus.png'
+author: 'nakta'
 excerpt: 'DISQUS 댓글 기능'
-tags: ["gatsby", "disqus"]
+tags: ['gatsby', 'disqus']
 ---
 
 시간날때마다 블로그를 만들어 보는데 피드백이 있어야 좋을것 같은 생가이 듭니다. 그래서 댓글 기능을 넣어 볼까 합니다.
@@ -13,7 +13,7 @@ Gatsby 기반의 블로그에 댓글 기능을 넣기위한 방법 중 하나로
 
 ## 디스커스?
 
-한마디로 **댓글기능을 제공해 주는 서비스**입니다. 
+한마디로 **댓글기능을 제공해 주는 서비스**입니다.
 홈페이지에 들어가면 여러가지 소개를 하는데 그 중 눈에 띄는 부분이 있습니다.
 
 ```
@@ -34,7 +34,7 @@ https://disqus.com/ 여기에 접속해서 간단하게 가입을 해주고 **Ge
 
 ![Disqus Get Stareted](./images/01.png)
 
-그러면 디스커스로 뭘 하고 싶은지 물어보게 되는데요. 
+그러면 디스커스로 뭘 하고 싶은지 물어보게 되는데요.
 우리는 사이트에 댓글 기능을 넣고 싶으니 **I want to install Disqus on my site**를 눌러 줍니다.
 
 ![Install Disqus](./images/02.png)
@@ -47,7 +47,6 @@ https://disqus.com/ 여기에 접속해서 간단하게 가입을 해주고 **Ge
 무료 플랜인 Basic은 무료인 만큼 큰 단점이 있는데요. 댓글창 주변으로 광고가 들어간다는 점입니다... :(
 
 여기까지하면 사이트 등록은 끝입니다. 이제 등록을 했으니 Gatsby에서 설정해주도록 하겠습니다.
-
 
 ## Gatsby 설정하기
 
@@ -73,12 +72,11 @@ npm i --save gatsby-plugin-disqus
 
 ```tsx
 import { Disqus } from 'gatsby-plugin-disqus';
-import React from 'react';
 
 type Props = {
-  siteUrl: string,
-  path: string,
-  title: string,
+  siteUrl: string;
+  path: string;
+  title: string;
 };
 
 const Comment = ({ siteUrl, path, title }: Props) => {
@@ -98,7 +96,6 @@ url은 현재 페이지의 전체 URl을 넣어주면 됩니다.
 그리고 identifier는 페이지별로 유니크한 값을 넣어주면 되는데요. 어차피 path가 유일한 값일테니 path를 그대로 사용합니다.
 그리고 title에는 현재 페이지의 title 값을 넘겨줍니다.
 
-
 이제 각 포스트 페이지에서 적당히 원하는 위치로 Comment 컴포넌트를 렌더링 해주면 되겠습니다.
 
 ```tsx
@@ -113,12 +110,9 @@ url은 현재 페이지의 전체 URl을 넣어주면 됩니다.
 
 ![Installed Disqus](./images/08.png)
 
-
-<br/>
-<br/>
-<br/>
-
-
+<br />
+<br />
+<br />
 
 ### Tip. Language 한국어 설정하기
 
@@ -147,5 +141,3 @@ Select에 있는 옵션 목록중에 해당하는 값이 없어서 저렇게 렌
 이 상태로 **Create Site**를 눌러주면 됩니다.
 
 ![Create Site](./images/06.png)
-
-

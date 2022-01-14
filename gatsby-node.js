@@ -4,11 +4,11 @@ const path = require('path');
 const { toKebabCase } = require('./src/helpers');
 
 const pageTypeRegex = /src\/(.*?)\//;
-const getType = node => node.fileAbsolutePath.match(pageTypeRegex)[1];
+const getType = (node) => node.fileAbsolutePath.match(pageTypeRegex)[1];
 
-const pageTemplate = path.resolve(`./src/templates/Page/Page2.tsx`);
-const indexTemplate = path.resolve(`./src/templates/index.tsx`);
-const tagsTemplate = path.resolve(`./src/templates/tags.tsx`);
+const pageTemplate = path.resolve(`./src/templates/PostTemplate/index.tsx`);
+const indexTemplate = path.resolve(`./src/templates/Main/index.tsx`);
+const tagsTemplate = path.resolve(`./src/templates/Tags/index.tsx`);
 
 exports.createPages = ({ actions, graphql, getNodes }) => {
   const { createPage } = actions;
@@ -34,7 +34,7 @@ exports.createPages = ({ actions, graphql, getNodes }) => {
         }
       }
     }
-  `).then(result => {
+  `).then((result) => {
     if (result.errors) {
       return Promise.reject(result.errors);
     }
@@ -87,13 +87,13 @@ exports.createPages = ({ actions, graphql, getNodes }) => {
 
     // Create tag pages
     const tags = filter(
-      tag => not(isNil(tag)),
-      uniq(flatMap(post => post.frontmatter.tags, posts)),
+      (tag) => not(isNil(tag)),
+      uniq(flatMap((post) => post.frontmatter.tags, posts)),
     );
 
-    forEach(tag => {
+    forEach((tag) => {
       const postsWithTag = posts.filter(
-        post =>
+        (post) =>
           post.frontmatter.tags && post.frontmatter.tags.indexOf(tag) !== -1,
       );
 
@@ -134,4 +134,14 @@ exports.sourceNodes = ({ actions }) => {
     }
   `;
   createTypes(typeDefs);
+};
+
+exports.onCreateWebpackConfig = ({ actions }) => {
+  actions.setWebpackConfig({
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
+    },
+  });
 };

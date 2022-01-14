@@ -5,11 +5,11 @@ import styled from '../styled';
 import Socials from './Socials';
 
 type Props = {
-  appendDescription?: React.ReactNode,
+  appendDescription?: React.ReactNode;
 };
 
 function About({ appendDescription }: Props) {
-  const data = useStaticQuery(graphql`
+  const data = useStaticQuery<GatsbyTypes.AboutQueryQuery>(graphql`
     query AboutQuery {
       file(relativePath: { eq: "profile.png" }) {
         childImageSharp {
@@ -60,7 +60,7 @@ const Title = styled.h1`
 
 const ProfileImage = styled(Img)`
   border-radius: 100%;
-  background: ${({ theme }) => theme.darkBackgroundSecondary};
+  background: ${({ theme }) => theme.backgroundSecondary};
 `;
 
 const UpperSide = styled.div`

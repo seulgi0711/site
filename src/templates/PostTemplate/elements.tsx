@@ -11,5 +11,5 @@ export const Wrapper = styled.div`
 `;
 
 export const Title = styled.h2`
-  color: ${({ theme }) => theme.darkColor};
+  color: ${({ theme }) => theme.color};
 `;

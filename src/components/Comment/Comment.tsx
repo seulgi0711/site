@@ -1,5 +1,5 @@
 import { map } from 'rambdax';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 const attrs = {
   src: 'https://utteranc.es/client.js',
