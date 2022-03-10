@@ -1196,7 +1196,7 @@ open 함수는 파라미터를 두 개 받습니다. 첫 번째는 열고 싶은
 리스트의 마지막에 모달을 추가하기 위해서 setter 함수의 파라미터로 함수를 이용합니다.
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ModalsDispatchContext, ModalsStateContext } from './ModalsContext';
 
 const ModalsProvider = ({ children }) => {
@@ -1216,7 +1216,7 @@ const ModalsProvider = ({ children }) => {
     });
   };
 
-  const dispatch = { open, close };
+  const dispatch = useMemo(() => ({ open, close }), []);
 
   return (
     <ModalsStateContext.Provider value={openedModals}>
