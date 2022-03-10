@@ -1216,7 +1216,7 @@ const ModalsProvider = ({ children }) => {
     });
   };
 
-  const dispatch = useMemo(() => ({ open, close }), []);
+  const dispatch = { open, close };
 
   return (
     <ModalsStateContext.Provider value={openedModals}>
@@ -1232,6 +1232,43 @@ export default ModalsProvider;
 
 close 함수는 파라미터로 모달 컴포넌트를 받습니다. 그리고 state가 리스트 형태기 때문에 filter를 이용해서 파라미터 받은 모달 컴포넌트를 제외하고 필터링 해줍니다.
 이러면 파라미터로 받은 모달 컴포넌트를 제외하고 나머지만 다시 저장해주게 됩니다.
+
+```jsx
+import React, { useMemo, useState } from 'react';
+import { ModalsDispatchContext, ModalsStateContext } from './ModalsContext';
+
+const ModalsProvider = ({ children }) => {
+  const [openedModals, setOpenedModals] = useState([]);
+
+  const open = (Component, props) => {
+    setOpenedModals((modals) => {
+      return [...modals, { Component, props }];
+    });
+  };
+
+  const close = (Component) => {
+    setOpenedModals((modals) => {
+      return modals.filter((modal) => {
+        return modal.Component !== Component;
+      });
+    });
+  };
+
+  const dispatch = useMemo(() => ({ open, close }), []);
+
+  return (
+    <ModalsStateContext.Provider value={openedModals}>
+      <ModalsDispatchContext.Provider value={dispatch}>
+        {children}
+      </ModalsDispatchContext.Provider>
+    </ModalsStateContext.Provider>
+  );
+};
+
+export default ModalsProvider;
+```
+
+그리고 마지막으로 ModalsDispatchContext에 넘겨주는 dispatch가 항상 재 생성돼서 리렌더링 되는것을 막아주기 위해 useMemo를 사용해줍니다.
 
 </CodeWave>
 
