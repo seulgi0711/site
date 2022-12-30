@@ -1169,9 +1169,7 @@ const ModalsProvider = ({ children }) => {
   const [openedModals, setOpenedModals] = useState([]);
 
   const open = (Component, props) => {
-    setOpenedModals((modals) => {
-      return [...modals, { Component, props }];
-    });
+    setOpenedModals([...openedModals, { Component, props }]);
   };
 
   const close = () => {};
@@ -1203,17 +1201,11 @@ const ModalsProvider = ({ children }) => {
   const [openedModals, setOpenedModals] = useState([]);
 
   const open = (Component, props) => {
-    setOpenedModals((modals) => {
-      return [...modals, { Component, props }];
-    });
+    setOpenedModals([...openedModals, { Component, props }]);
   };
 
   const close = (Component) => {
-    setOpenedModals((modals) => {
-      return modals.filter((modal) => {
-        return modal.Component !== Component;
-      });
-    });
+    setOpenedModals(openedModals.filter((modal) => modal.Component !== Component));
   };
 
   const dispatch = { open, close };
@@ -1241,17 +1233,11 @@ const ModalsProvider = ({ children }) => {
   const [openedModals, setOpenedModals] = useState([]);
 
   const open = (Component, props) => {
-    setOpenedModals((modals) => {
-      return [...modals, { Component, props }];
-    });
+    setOpenedModals([...openedModals, { Component, props }]);
   };
 
   const close = (Component) => {
-    setOpenedModals((modals) => {
-      return modals.filter((modal) => {
-        return modal.Component !== Component;
-      });
-    });
+    setOpenedModals(openedModals.filter((modal) => modal.Component !== Component));
   };
 
   const dispatch = useMemo(() => ({ open, close }), []);
