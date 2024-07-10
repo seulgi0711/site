@@ -1,0 +1,15 @@
+{
+  "name": "site",
+  "sources": {
+    "dir": "app",
+    "subdirs": true
+  },
+  "package-specs": {
+    "module": "esmodule",
+    "in-source": true
+  },
+  "suffix": ".js",
+  "jsx": { "version": 4 },
+  "bs-dependencies": ["@rescript/core", "@rescript/react"],
+  "bsc-flags": ["-open RescriptCore"]
+}

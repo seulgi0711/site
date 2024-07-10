@@ -1,1 +1,0 @@
-// prismjs color theme
